@@ -3,11 +3,18 @@
     --secondary-color: #fdfaf6;
     --tertiary-color: #e4efe7;
     --quaternary-color: #99bc85;
+
+    --neutral-color: #aed6cf; /* Blue */
+    --success-color: #99bc85; /* Green */
+    --warning-color: #f08787; /* Red */
 }
 
 body {
     background-color: var(--primary-color);
     min-height: 100vh;
+}
+
+body.auth-body {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,4 +51,21 @@ body {
 
 .alert {
     margin-bottom: 1rem;
+}
+
+/* Dashboard specific styles */
+.bg-neutral {
+    background-color: var(--neutral-color) !important;
+}
+
+.bg-success-custom {
+    background-color: var(--success-color) !important;
+}
+
+.bg-warning-custom {
+    background-color: var(--warning-color) !important;
+}
+
+.dashboard-container {
+    padding-top: 2rem;
 }

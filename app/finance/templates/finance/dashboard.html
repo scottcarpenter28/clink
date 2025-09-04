@@ -1,8 +1,126 @@
-{% extends 'finance/auth_base.html' %}
+{% extends 'finance/base.html' %}
 {% load static %}
 
-{% block title %}Register - Clink Finance{% endblock %}
+{% block title %}Dashboard - Clink Finance{% endblock %}
 
-{% block auth_content %}
-    <h1>Hello World</h1>
+{% block body_class %}dashboard-body{% endblock %}
+
+{% block content %}
+<div class="container dashboard-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2">Financial Dashboard</h1>
+            <p class="text-muted">{{ current_month }}</p>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-success-custom">
+                <div class="card-body">
+                    <h5 class="card-title">Total Income</h5>
+                    <h3 class="card-text">${{ total_income|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning-custom">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expenses</h5>
+                    <h3 class="card-text">${{ total_expenses|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-neutral">
+                <div class="card-body">
+                    <h5 class="card-title">Net Income</h5>
+                    <h3 class="card-text">${{ net_income|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Income and Expenses Tables -->
+    <div class="row">
+        <!-- Income Table -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success-custom text-white">
+                    <h5 class="mb-0">Monthly Income</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if monthly_income %}
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Account</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in monthly_income %}
+                                    <tr>
+                                        <td>{{ transaction.category.name }}</td>
+                                        <td>{{ transaction.account.name }}</td>
+                                        <td class="font-weight-bold" style="color: var(--success-color);">${{ transaction.amount|floatformat:2 }}</td>
+                                        <td>{{ transaction.created|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-3 text-center text-muted">
+                            <p>No income recorded for this month.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning-custom text-white">
+                    <h5 class="mb-0">Monthly Expenses</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if monthly_expenses %}
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Account</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in monthly_expenses %}
+                                    <tr>
+                                        <td>{{ transaction.category.name }}</td>
+                                        <td>{{ transaction.account.name }}</td>
+                                        <td class="font-weight-bold" style="color: var(--warning-color);">${{ transaction.amount|floatformat:2 }}</td>
+                                        <td>{{ transaction.created|date:"M d, Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-3 text-center text-muted">
+                            <p>No expenses recorded for this month.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
