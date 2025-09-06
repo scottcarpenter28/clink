@@ -47,8 +47,11 @@
         <!-- Income Table -->
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-success-custom text-white">
+                <div class="card-header bg-success-custom text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Monthly Income</h5>
+                    <a href="{% url 'finance:add_transaction' 'income' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i>Add Income
+                    </a>
                 </div>
                 <div class="card-body p-0">
                     {% if monthly_income %}
@@ -86,8 +89,11 @@
         <!-- Expenses Table -->
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-warning-custom text-white">
+                <div class="card-header bg-warning-custom text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Monthly Expenses</h5>
+                    <a href="{% url 'finance:add_transaction' 'expense' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i>Add Expense
+                    </a>
                 </div>
                 <div class="card-body p-0">
                     {% if monthly_expenses %}

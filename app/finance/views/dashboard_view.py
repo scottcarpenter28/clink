@@ -8,4 +8,4 @@ from finance.utilities.transaction_utils import MonthlyTransactionUtils, Monthly
 def dashboard_view(request):
     account_monthly_transactions = MonthlyTransactionUtils(request.user.accounts.all())
     context: MonthlyDashboard = account_monthly_transactions.get_months_dashboard()
-    return render(request, 'finance/dashboard.html', context.dict())
+    return render(request, 'finance/dashboard.html', context.model_dump())

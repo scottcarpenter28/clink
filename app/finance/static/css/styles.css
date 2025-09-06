@@ -69,3 +69,23 @@ body.auth-body {
 .dashboard-container {
     padding-top: 2rem;
 }
+
+.add-transaction-body {
+    padding-top: 2rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    font-weight: 600;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}

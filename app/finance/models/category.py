@@ -1,4 +1,5 @@
 from django.db import models
+from pip._vendor import vendored
 
 
 class Category(models.Model):
@@ -10,6 +11,7 @@ class Category(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=32)
     category_type = models.CharField(max_length=10, choices=CATEGORY_TYPES)
+    vendor = models.CharField(max_length=32, default='')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
