@@ -41,7 +41,7 @@ class TransactionFormHandler:
 
     def create_form(self, data: Optional[Dict] = None):
         if data:
-            return self.form_class(self.user, data)
+            return self.form_class(user=self.user, data=data)
         return self.form_class(user=self.user)
 
     def process_form(self, form):
