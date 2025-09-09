@@ -2,44 +2,38 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from ..forms import IncomeForm, ExpenseForm
+
+from finance.utilities.transaction_utils import TransactionProcessor
+
+
+def handle_invalid_transaction_type(request):
+    messages.error(request, 'Invalid transaction type.')
+    return redirect('finance:dashboard')
+
+
+def handle_successful_transaction(request, processor, transaction):
+    success_message = processor.get_success_message(transaction)
+    messages.success(request, success_message)
+    return redirect('finance:dashboard')
 
 
 @login_required
 def add_transaction_view(request, transaction_type):
-    """
-    View for adding income or expense transactions.
+    processor = TransactionProcessor(request.user, transaction_type)
 
-    Args:
-        transaction_type (str): Either 'income' or 'expense'
-    """
-    if transaction_type not in ['income', 'expense']:
-        messages.error(request, 'Invalid transaction type.')
-        return redirect('finance:dashboard')
+    if not processor.is_valid_type():
+        return handle_invalid_transaction_type(request)
 
-    # Determine which form to use
-    FormClass = IncomeForm if transaction_type == 'income' else ExpenseForm
+    cancel_url = reverse('finance:dashboard')
 
     if request.method == 'POST':
-        form = FormClass(request.POST, user=request.user)
-        if form.is_valid():
-            transaction = form.save()
-            messages.success(
-                request,
-                f'{transaction_type.title()} of ${transaction.amount:.2f} added successfully!'
-            )
-            return redirect('finance:dashboard')
+        transaction, context = processor.handle_post_request(request.POST, cancel_url)
+
+        if transaction:
+            return handle_successful_transaction(request, processor, transaction)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = FormClass(user=request.user)
+        context = processor.handle_get_request(cancel_url)
 
-    context = {
-        'form': form,
-        'transaction_type': transaction_type,
-        'page_title': f'Add {transaction_type.title()}',
-        'submit_text': f'Add {transaction_type.title()}',
-        'cancel_url': reverse('finance:dashboard'),
-    }
-
-    return render(request, 'finance/add_transaction.html', context)
+    return render(request, 'finance/add_transaction.html', context.dict())

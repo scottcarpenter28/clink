@@ -1,0 +1,6 @@
+<div class="card-header {% if transaction_type == 'income' %}bg-success-custom{% else %}bg-warning-custom{% endif %} text-white">
+    <h4 class="mb-0">
+        <i class="{% if transaction_type == 'income' %}fas fa-plus-circle{% else %}fas fa-minus-circle{% endif %} me-2"></i>
+        {{ page_title }}
+    </h4>
+</div>

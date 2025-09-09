@@ -1,77 +1,81 @@
-from typing import Optional
-
-from django.utils import timezone
-from django.db.models import QuerySet
+from typing import Optional, Dict, Any
+from django.contrib.auth.models import User
 from pydantic import BaseModel
 
-from finance.models.income_or_expense import IncomeOrExpense
+from finance.forms import IncomeForm, ExpenseForm
 
 
-def get_current_month_year() -> tuple[int, int]:
-    now = timezone.now()
-    return now.month, now.year
+def get_form_class(transaction_type: str):
+    return IncomeForm if transaction_type == 'income' else ExpenseForm
 
 
-def calculate_total_amount(transactions: QuerySet) -> float:
-    return sum(transaction.amount for transaction in transactions)
+def format_success_message(transaction_type: str, amount: float) -> str:
+    return f'{transaction_type.title()} of ${amount:.2f} added successfully!'
 
 
-def format_month_year(month: int, year: int) -> str:
-    from datetime import datetime
-    date_obj = datetime(year, month, 1)
-    return date_obj.strftime('%B %Y')
+def get_page_title(transaction_type: str) -> str:
+    return f'Add {transaction_type.title()}'
 
 
-class MonthlyDashboard(BaseModel):
-    monthly_income: QuerySet
-    monthly_expenses: QuerySet
-    total_income: float
-    total_expenses: float
-    net_income: float
-    current_month: str
+def get_submit_text(transaction_type: str) -> str:
+    return f'Add {transaction_type.title()}'
+
+
+class TransactionContext(BaseModel):
+    form: Any
+    transaction_type: str
+    page_title: str
+    submit_text: str
+    cancel_url: str
 
     model_config = {
         "arbitrary_types_allowed": True
     }
 
 
-class MonthlyTransactionUtils:
-    def __init__(self, user_accounts: QuerySet, month: Optional[int] = None, year: Optional[int] = None):
-        self.user_accounts = user_accounts
+class TransactionFormHandler:
+    def __init__(self, user: User, transaction_type: str):
+        self.user = user
+        self.transaction_type = transaction_type
+        self.form_class = get_form_class(transaction_type)
 
-        if month is None or year is None:
-            month, year = get_current_month_year()
+    def create_form(self, data: Optional[Dict] = None):
+        if data:
+            return self.form_class(self.user, data)
+        return self.form_class(user=self.user)
 
-        self.month = month
-        self.year = year
+    def process_form(self, form):
+        if form.is_valid():
+            return form.save()
+        return None
 
-    def __get_monthly_transactions_by_type(self, category_type: str) -> QuerySet:
-        return IncomeOrExpense.objects.filter(
-            account__in=self.user_accounts,
-            category__category_type=category_type,
-            created__month=self.month,
-            created__year=self.year
-        ).select_related('category', 'account').order_by('-created')
-
-    def get_monthly_income(self) -> QuerySet:
-        return self.__get_monthly_transactions_by_type('income')
-
-    def get_monthly_expenses(self) -> QuerySet:
-        return self.__get_monthly_transactions_by_type('expense')
-
-    def get_months_dashboard(self) -> MonthlyDashboard:
-        monthly_income = self.get_monthly_income()
-        monthly_expenses = self.get_monthly_expenses()
-
-        total_income = calculate_total_amount(monthly_income)
-        total_expenses = calculate_total_amount(monthly_expenses)
-        net_income = total_income - total_expenses
-
-        return MonthlyDashboard(
-            monthly_income=monthly_income,
-            monthly_expenses=monthly_expenses,
-            total_income=total_income,
-            total_expenses=total_expenses,
-            net_income=net_income,
-            current_month=format_month_year(self.month, self.year)
+    def get_context(self, form, cancel_url: str) -> TransactionContext:
+        return TransactionContext(
+            form=form,
+            transaction_type=self.transaction_type,
+            page_title=get_page_title(self.transaction_type),
+            submit_text=get_submit_text(self.transaction_type),
+            cancel_url=cancel_url
         )
+
+
+class TransactionProcessor:
+    def __init__(self, user: User, transaction_type: str):
+        self.transaction_type = transaction_type
+        self.form_handler = TransactionFormHandler(user, transaction_type)
+
+    def is_valid_type(self) -> bool:
+        return self.transaction_type in ['income', 'expense']
+
+    def handle_get_request(self, cancel_url: str) -> TransactionContext:
+        form = self.form_handler.create_form()
+        return self.form_handler.get_context(form, cancel_url)
+
+    def handle_post_request(self, request_data: Dict, cancel_url: str) -> tuple[Optional[Any], TransactionContext]:
+        form = self.form_handler.create_form(request_data)
+        transaction = self.form_handler.process_form(form)
+        context = self.form_handler.get_context(form, cancel_url)
+        return transaction, context
+
+    def get_success_message(self, transaction) -> str:
+        return format_success_message(self.transaction_type, transaction.amount)

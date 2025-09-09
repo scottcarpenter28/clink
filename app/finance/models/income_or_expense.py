@@ -11,6 +11,7 @@ class IncomeOrExpense(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='transactions')
     amount = models.FloatField(validators=[MinValueValidator(0.01)])
+    vendor = models.CharField(max_length=32, default='')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

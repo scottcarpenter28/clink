@@ -1,5 +1,5 @@
 from django import forms
-from .models import IncomeOrExpense, Account, Category
+from finance.models import IncomeOrExpense, Account, Category
 
 
 class TransactionForm(forms.ModelForm):
@@ -28,7 +28,7 @@ class TransactionForm(forms.ModelForm):
 
     class Meta:
         model = IncomeOrExpense
-        fields = ['account', 'category', 'amount']
+        fields = ['account', 'category', 'vendor', 'amount']
         widgets = {
             'amount': forms.NumberInput(attrs={'step': '0.01', 'min': '0.01', 'placeholder': '0.00'}),
         }

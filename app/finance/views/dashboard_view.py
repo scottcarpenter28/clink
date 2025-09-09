@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from finance.utilities.transaction_utils import MonthlyTransactionUtils, MonthlyDashboard
+from finance.utilities.dashboard_utils import MonthlyTransactionUtils, MonthlyDashboard
 
 
 @login_required(login_url='finance:login')
