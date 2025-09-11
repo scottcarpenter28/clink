@@ -54,7 +54,6 @@ class TestMonthlyDashboard(TestCase):
     """Test MonthlyDashboard Pydantic model"""
 
     def setUp(self):
-        # Create proper QuerySet mocks that pass isinstance checks
         self.mock_income_queryset = Mock()
         self.mock_income_queryset.__class__ = QuerySet
         self.mock_expense_queryset = Mock()
@@ -187,13 +186,12 @@ class TestMonthlyTransactionUtils(TestCase):
     @patch('finance.utilities.dashboard_utils.calculate_total_amount')
     @patch('finance.utilities.dashboard_utils.format_month_year')
     def test_get_months_dashboard(self, mock_format_month_year, mock_calculate_total_amount):
-        # Setup mocks
         mock_income_queryset = Mock()
         mock_income_queryset.__class__ = QuerySet
         mock_expense_queryset = Mock()
         mock_expense_queryset.__class__ = QuerySet
         mock_format_month_year.return_value = 'June 2024'
-        mock_calculate_total_amount.side_effect = [1500.00, 800.50]  # income, then expenses
+        mock_calculate_total_amount.side_effect = [1500.00, 800.50]
 
         utils = MonthlyTransactionUtils(self.mock_user_accounts, month=6, year=2024)
 
@@ -201,23 +199,20 @@ class TestMonthlyTransactionUtils(TestCase):
             with patch.object(utils, 'get_monthly_expenses', return_value=mock_expense_queryset) as mock_get_expenses:
                 result = utils.get_months_dashboard()
 
-                # Verify method calls
                 mock_get_income.assert_called_once()
                 mock_get_expenses.assert_called_once()
                 mock_format_month_year.assert_called_once_with(6, 2024)
 
-                # Verify calculate_total_amount was called for both querysets
                 self.assertEqual(mock_calculate_total_amount.call_count, 2)
                 mock_calculate_total_amount.assert_any_call(mock_income_queryset)
                 mock_calculate_total_amount.assert_any_call(mock_expense_queryset)
 
-                # Verify the returned dashboard
                 self.assertIsInstance(result, MonthlyDashboard)
                 self.assertEqual(result.monthly_income, mock_income_queryset)
                 self.assertEqual(result.monthly_expenses, mock_expense_queryset)
                 self.assertEqual(result.total_income, 1500.00)
                 self.assertEqual(result.total_expenses, 800.50)
-                self.assertEqual(result.net_income, 699.50)  # 1500 - 800.50
+                self.assertEqual(result.net_income, 699.50)
                 self.assertEqual(result.current_month, 'June 2024')
 
     @patch('finance.utilities.dashboard_utils.calculate_total_amount')
@@ -228,7 +223,7 @@ class TestMonthlyTransactionUtils(TestCase):
         mock_expense_queryset = Mock()
         mock_expense_queryset.__class__ = QuerySet
         mock_format_month_year.return_value = 'July 2024'
-        mock_calculate_total_amount.side_effect = [500.00, 800.00]  # income lower than expenses
+        mock_calculate_total_amount.side_effect = [500.00, 800.00]
 
         utils = MonthlyTransactionUtils(self.mock_user_accounts, month=7, year=2024)
 
@@ -238,7 +233,7 @@ class TestMonthlyTransactionUtils(TestCase):
 
                 self.assertEqual(result.total_income, 500.00)
                 self.assertEqual(result.total_expenses, 800.00)
-                self.assertEqual(result.net_income, -300.00)  # Negative net income
+                self.assertEqual(result.net_income, -300.00)
 
 
 class TestMonthlyTransactionUtilsIntegration(TestCase):
@@ -263,19 +258,15 @@ class TestMonthlyTransactionUtilsIntegration(TestCase):
         mock_expense_queryset.__class__ = QuerySet
         mock_income_or_expense.objects.filter.return_value.select_related.return_value.order_by.return_value = Mock()
 
-        # Create utils instance
         utils = MonthlyTransactionUtils(self.mock_user_accounts)
 
-        # Mock the methods to return our test querysets
         with patch.object(utils, 'get_monthly_income', return_value=mock_income_queryset):
             with patch.object(utils, 'get_monthly_expenses', return_value=mock_expense_queryset):
                 dashboard = utils.get_months_dashboard()
 
-                # Verify initialization used current month/year
                 self.assertEqual(utils.month, 6)
                 self.assertEqual(utils.year, 2024)
 
-                # Verify dashboard creation
                 self.assertIsInstance(dashboard, MonthlyDashboard)
                 self.assertEqual(dashboard.total_income, 2000.00)
                 self.assertEqual(dashboard.total_expenses, 1200.00)
@@ -285,10 +276,8 @@ class TestMonthlyTransactionUtilsIntegration(TestCase):
     def test_manual_month_year_workflow(self):
         """Test workflow with manually specified month and year"""
         with patch('finance.utilities.dashboard_utils.get_current_month_year') as mock_get_current:
-            # Create utils with specific month/year
             utils = MonthlyTransactionUtils(self.mock_user_accounts, month=3, year=2023)
 
-            # Verify it didn't call get_current_month_year
             mock_get_current.assert_not_called()
             self.assertEqual(utils.month, 3)
             self.assertEqual(utils.year, 2023)
