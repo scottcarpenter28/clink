@@ -12,7 +12,7 @@ from finance.utilities.dashboard_utils import (
     MonthlyDashboard,
     MonthlyTransactionUtils
 )
-from finance.models.income_or_expense import IncomeOrExpense
+from finance.models.transaction import Transaction
 
 
 class TestUtilityFunctions(TestCase):
@@ -123,38 +123,38 @@ class TestMonthlyTransactionUtils(TestCase):
         self.assertEqual(utils.year, 2024)
         mock_get_current_month_year.assert_called_once()
 
-    @patch('finance.utilities.dashboard_utils.IncomeOrExpense')
-    def test_get_monthly_transactions_by_type_income(self, mock_income_or_expense):
+    @patch('finance.utilities.dashboard_utils.Transaction')
+    def test_get_monthly_transactions_by_type_income(self, mock_transaction):
         mock_queryset = Mock()
-        mock_income_or_expense.objects.filter.return_value.select_related.return_value.order_by.return_value = mock_queryset
+        mock_transaction.objects.filter.return_value.select_related.return_value.order_by.return_value = mock_queryset
 
         utils = MonthlyTransactionUtils(self.mock_user_accounts, month=6, year=2024)
         result = utils._MonthlyTransactionUtils__get_monthly_transactions_by_type('income')
 
-        mock_income_or_expense.objects.filter.assert_called_once_with(
+        mock_transaction.objects.filter.assert_called_once_with(
             account__in=self.mock_user_accounts,
             category__category_type='income',
-            created__month=6,
-            created__year=2024
+            transaction_date__month=6,
+            transaction_date__year=2024
         )
-        mock_income_or_expense.objects.filter.return_value.select_related.assert_called_once_with('category', 'account')
-        mock_income_or_expense.objects.filter.return_value.select_related.return_value.order_by.assert_called_once_with('-created')
+        mock_transaction.objects.filter.return_value.select_related.assert_called_once_with('category', 'account')
+        mock_transaction.objects.filter.return_value.select_related.return_value.order_by.assert_called_once_with('-transaction_date', '-created')
 
         self.assertEqual(result, mock_queryset)
 
-    @patch('finance.utilities.dashboard_utils.IncomeOrExpense')
-    def test_get_monthly_transactions_by_type_expense(self, mock_income_or_expense):
+    @patch('finance.utilities.dashboard_utils.Transaction')
+    def test_get_monthly_transactions_by_type_expense(self, mock_transaction):
         mock_queryset = Mock()
-        mock_income_or_expense.objects.filter.return_value.select_related.return_value.order_by.return_value = mock_queryset
+        mock_transaction.objects.filter.return_value.select_related.return_value.order_by.return_value = mock_queryset
 
         utils = MonthlyTransactionUtils(self.mock_user_accounts, month=12, year=2023)
         result = utils._MonthlyTransactionUtils__get_monthly_transactions_by_type('expense')
 
-        mock_income_or_expense.objects.filter.assert_called_once_with(
+        mock_transaction.objects.filter.assert_called_once_with(
             account__in=self.mock_user_accounts,
             category__category_type='expense',
-            created__month=12,
-            created__year=2023
+            transaction_date__month=12,
+            transaction_date__year=2023
         )
 
         self.assertEqual(result, mock_queryset)
@@ -243,11 +243,11 @@ class TestMonthlyTransactionUtilsIntegration(TestCase):
         self.mock_user_accounts.__class__ = QuerySet
 
     @patch('finance.utilities.dashboard_utils.get_current_month_year')
-    @patch('finance.utilities.dashboard_utils.IncomeOrExpense')
+    @patch('finance.utilities.dashboard_utils.Transaction')
     @patch('finance.utilities.dashboard_utils.calculate_total_amount')
     @patch('finance.utilities.dashboard_utils.format_month_year')
     def test_complete_dashboard_workflow(self, mock_format_month_year, mock_calculate_total_amount,
-                                       mock_income_or_expense, mock_get_current_month_year):
+                                       mock_transaction, mock_get_current_month_year):
         mock_get_current_month_year.return_value = (6, 2024)
         mock_format_month_year.return_value = 'June 2024'
         mock_calculate_total_amount.side_effect = [2000.00, 1200.00]
@@ -256,7 +256,7 @@ class TestMonthlyTransactionUtilsIntegration(TestCase):
         mock_income_queryset.__class__ = QuerySet
         mock_expense_queryset = Mock()
         mock_expense_queryset.__class__ = QuerySet
-        mock_income_or_expense.objects.filter.return_value.select_related.return_value.order_by.return_value = Mock()
+        mock_transaction.objects.filter.return_value.select_related.return_value.order_by.return_value = Mock()
 
         utils = MonthlyTransactionUtils(self.mock_user_accounts)
 

@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from finance.models import IncomeOrExpense
+from finance.models import Transaction
 
 
-@admin.register(IncomeOrExpense)
-class IncomeOrExpenseAdmin(admin.ModelAdmin):
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
     list_display = ('get_transaction_type', 'category', 'amount', 'account', 'created', 'updated')
-    list_filter = ('category__category_type', 'category', 'account', 'created', 'updated')
+    list_filter = ('category__category_type', 'category', 'account', 'transaction_date', 'created', 'updated')
     search_fields = ('category__name', 'account__name', 'account__owner__username')
     readonly_fields = ('uid', 'created', 'updated')
     ordering = ('-created',)

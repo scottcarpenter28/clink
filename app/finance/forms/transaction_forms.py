@@ -1,5 +1,5 @@
 from django import forms
-from finance.models import IncomeOrExpense, Account, Category
+from finance.models import Transaction, Account, Category
 
 
 class TransactionForm(forms.ModelForm):
@@ -26,11 +26,16 @@ class TransactionForm(forms.ModelForm):
             'class': 'form-select'
         })
 
+        self.fields['transaction_date'].widget.attrs.update({
+            'type': 'date'
+        })
+
     class Meta:
-        model = IncomeOrExpense
-        fields = ['account', 'category', 'vendor', 'amount']
+        model = Transaction
+        fields = ['account', 'category', 'vendor', 'amount', 'transaction_date']
         widgets = {
             'amount': forms.NumberInput(attrs={'step': '0.01', 'min': '0.01', 'placeholder': '0.00'}),
+            'transaction_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
 

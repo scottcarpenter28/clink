@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.db.models import QuerySet
 from pydantic import BaseModel
 
-from finance.models.income_or_expense import IncomeOrExpense
+from finance.models.transaction import Transaction
 
 
 def get_current_month_year() -> tuple[int, int]:
@@ -46,12 +46,12 @@ class MonthlyTransactionUtils:
         self.year = year
 
     def __get_monthly_transactions_by_type(self, category_type: str) -> QuerySet:
-        return IncomeOrExpense.objects.filter(
+        return Transaction.objects.filter(
             account__in=self.user_accounts,
             category__category_type=category_type,
-            created__month=self.month,
-            created__year=self.year
-        ).select_related('category', 'account').order_by('-created')
+            transaction_date__month=self.month,
+            transaction_date__year=self.year
+        ).select_related('category', 'account').order_by('-transaction_date', '-created')
 
     def get_monthly_income(self) -> QuerySet:
         return self.__get_monthly_transactions_by_type('income')

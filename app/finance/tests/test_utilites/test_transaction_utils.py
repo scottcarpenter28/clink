@@ -263,7 +263,7 @@ class TestTransactionProcessor(TestCase):
         mock_context = Mock(spec=TransactionContext)
 
         mock_form_handler.create_form.return_value = mock_form
-        mock_form_handler.process_form.return_value = None  # Invalid form
+        mock_form_handler.process_form.return_value = None
         mock_form_handler.get_context.return_value = mock_context
         mock_form_handler_class.return_value = mock_form_handler
 
@@ -298,7 +298,6 @@ class TestTransactionProcessorIntegration(TestCase):
 
     def test_integration_income_workflow(self):
         with patch('finance.utilities.transaction_utils.TransactionFormHandler') as mock_handler_class:
-            # Mock the form handler and its methods
             mock_handler = Mock()
             mock_form = Mock()
             mock_transaction = Mock()

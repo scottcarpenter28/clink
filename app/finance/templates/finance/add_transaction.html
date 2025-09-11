@@ -23,6 +23,8 @@
 
                         {% include 'finance/partials/form_field.html' with field=form.vendor label="Vendor" icon="fas fa-store" %}
 
+                        {% include 'finance/partials/form_field.html' with field=form.transaction_date label="Transaction Date" icon="fas fa-calendar-alt" %}
+
                         {% include 'finance/partials/form_field.html' with field=form.amount label="Amount" icon="fas fa-dollar-sign" input_group=True input_group_prefix="$" field_class="mb-4" %}
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
