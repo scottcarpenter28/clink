@@ -20,6 +20,10 @@ body.auth-body {
     justify-content: center;
 }
 
+.nav-bg {
+    background-color: var(--quaternary-color);
+}
+
 .auth-container {
     background-color: var(--secondary-color);
     border-radius: 15px;
@@ -67,11 +71,6 @@ body.auth-body {
 }
 
 .dashboard-container {
-    padding-top: 2rem;
-}
-
-.add-transaction-body,
-.add-account-body {
     padding-top: 2rem;
 }
 
