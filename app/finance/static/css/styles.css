@@ -70,7 +70,8 @@ body.auth-body {
     padding-top: 2rem;
 }
 
-.add-transaction-body {
+.add-transaction-body,
+.add-account-body {
     padding-top: 2rem;
 }
 
