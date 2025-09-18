@@ -1,0 +1,130 @@
+{% extends 'finance/base.html' %}
+{% load static %}
+
+{% block title %}Transactions - {{ month_name }} {{ selected_year }} | Clink Finance{% endblock %}
+
+{% block extra_css %}
+<style>
+    .badge.bg-success-custom {
+        background-color: var(--success-color);
+    }
+
+    .badge.bg-warning-custom {
+        background-color: var(--warning-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="mb-4">Transactions - {{ month_name }} {{ selected_year }}</h1>
+        <form method="get" action="{% url 'finance:transaction_list' %}">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="month" class="form-label">Month</label>
+                    <select class="form-select" id="month" name="month">
+                        {% for month_num, month_text in months %}
+                            <option value="{{ month_num }}" {% if month_num == selected_month %}selected{% endif %}>
+                                {{ month_text }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="year" class="form-label">Year</label>
+                    <select class="form-select" id="year" name="year">
+                        {% for year_num in years %}
+                            <option value="{{ year_num }}" {% if year_num == selected_year %}selected{% endif %}>
+                                {{ year_num }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Transaction Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="all" {% if selected_type == 'all' %}selected{% endif %}>All</option>
+                        <option value="income" {% if selected_type == 'income' %}selected{% endif %}>Income</option>
+                        <option value="expense" {% if selected_type == 'expense' %}selected{% endif %}>Expense</option>
+                    </select>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">{{ month_name }} {{ selected_year }} Transactions</h5>
+            </div>
+
+            {% if transactions %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Vendor</th>
+                                <th>Account</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                                <tr>
+                                    <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if transaction.category.category_type == 'income' %}
+                                            <span class="badge bg-success-custom">{{ transaction.category.name }}</span>
+                                        {% else %}
+                                            <span class="badge bg-warning-custom">{{ transaction.category.name }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ transaction.vendor }}</td>
+                                    <td>{{ transaction.account.name }}</td>
+                                    <td class="text-end">
+                                        {% if transaction.category.category_type == 'income' %}
+                                            <span class="text-success fw-bold">+${{ transaction.amount|floatformat:2 }}</span>
+                                        {% else %}
+                                            <span class="text-danger fw-bold">-${{ transaction.amount|floatformat:2 }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="card-body text-center py-5">
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle me-2"></i>No transactions found for {{ month_name }} {{ selected_year }}{% if selected_type != 'all' %} ({{ selected_type }}){% endif %}.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const selects = form.querySelectorAll('select');
+
+        selects.forEach(select => {
+            select.addEventListener('change', function() {
+                form.submit();
+            });
+        });
+    });
+</script>
+{% endblock %}
