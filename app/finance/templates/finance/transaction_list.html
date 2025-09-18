@@ -43,6 +43,7 @@
                         {% endfor %}
                     </select>
                 </div>
+                <!--Todo: Add filter by category, user account-->
                 <div class="col-md-4">
                     <label for="type" class="form-label">Transaction Type</label>
                     <select class="form-select" id="type" name="type">
@@ -57,6 +58,8 @@
         </form>
     </div>
 </div>
+
+{% include 'finance/partials/summary_cards.html' %}
 
 <div class="row">
     <div class="col">

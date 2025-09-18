@@ -14,33 +14,7 @@
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card text-white bg-success-custom">
-                <div class="card-body">
-                    <h5 class="card-title">Total Income</h5>
-                    <h3 class="card-text">${{ total_income|floatformat:2 }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-warning-custom">
-                <div class="card-body">
-                    <h5 class="card-title">Total Expenses</h5>
-                    <h3 class="card-text">${{ total_expenses|floatformat:2 }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-neutral">
-                <div class="card-body">
-                    <h5 class="card-title">Net Income</h5>
-                    <h3 class="card-text">${{ net_income|floatformat:2 }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include 'finance/partials/summary_cards.html' %}
 
     <!-- Income and Expenses Tables -->
     <div class="row mb-4">
