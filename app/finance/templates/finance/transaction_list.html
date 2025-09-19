@@ -19,6 +19,7 @@
 <div class="row mb-4">
     <div class="col">
         <h1 class="mb-4">Transactions - {{ month_name }} {{ selected_year }}</h1>
+        <!--Todo: Make this an accordion -->
         <form method="get" action="{% url 'finance:transaction_list' %}" id="filterForm">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
@@ -82,7 +83,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        
+
                         <!-- Reset filters button -->
                         <div class="col-12 text-end mt-3">
                             <button type="button" class="btn btn-outline-secondary me-2" id="resetFilters">
@@ -183,14 +184,14 @@
         const form = document.querySelector('form');
         const selects = form.querySelectorAll('select');
         const resetButton = document.getElementById('resetFilters');
-        
+
         // Auto-submit form when select values change
         selects.forEach(select => {
             select.addEventListener('change', function() {
                 form.submit();
             });
         });
-        
+
         // Reset filters button
         resetButton.addEventListener('click', function() {
             // Reset all selects to their first option except month and year
@@ -201,17 +202,17 @@
             });
             form.submit();
         });
-        
+
         // Filter the categories based on transaction type
         const typeSelect = document.getElementById('type');
         const categorySelect = document.getElementById('category');
-        
+
         // Initial state - hide categories that don't match the selected type
         function updateCategoryVisibility() {
             const selectedType = typeSelect.value;
             const incomeGroup = categorySelect.querySelector('optgroup[label="Income Categories"]');
             const expenseGroup = categorySelect.querySelector('optgroup[label="Expense Categories"]');
-            
+
             if (selectedType === 'all') {
                 // Show all category options
                 if (incomeGroup) incomeGroup.style.display = '';
@@ -226,10 +227,10 @@
                 if (expenseGroup) expenseGroup.style.display = '';
             }
         }
-        
+
         // Initial setup
         updateCategoryVisibility();
-        
+
         // Update when type changes
         typeSelect.addEventListener('change', function() {
             updateCategoryVisibility();
