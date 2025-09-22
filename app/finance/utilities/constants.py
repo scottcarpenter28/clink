@@ -5,3 +5,23 @@ MONTH_NAMES = {
 }
 
 TRANSACTION_TYPES = ['income', 'expense']
+
+# Budget constants
+BUDGET_STATUS_CHOICES = [
+    ('on_track', 'On Track'),
+    ('warning', 'Warning'),
+    ('over_budget', 'Over Budget'),
+    ('unallocated', 'Unallocated')
+]
+
+# Progress bar colors for different budget statuses
+BUDGET_STATUS_COLORS = {
+    'on_track': 'success',    # Green
+    'warning': 'warning',     # Yellow
+    'over_budget': 'danger',  # Red
+    'unallocated': 'info'     # Blue
+}
+
+# Thresholds for budget warnings (percentage of allocation spent)
+BUDGET_WARNING_THRESHOLD = 80   # Show warning when 80% of budget is spent
+BUDGET_DANGER_THRESHOLD = 100   # Show danger when 100% of budget is spent

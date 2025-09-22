@@ -1,0 +1,215 @@
+{% extends 'finance/base.html' %}
+{% load static %}
+
+{% block title %}Budget Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="mb-3">Budget Dashboard</h2>
+      <p class="lead">Track your spending against your monthly budget</p>
+    </div>
+    <div class="col-auto">
+      <a href="{% url 'finance:budget_setup' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> New Budget
+      </a>
+    </div>
+  </div>
+  
+  <!-- Filter Form -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="get" class="row g-3">
+        <div class="col-md-5">
+          {{ filter_form.year }}
+        </div>
+        <div class="col-md-5">
+          {{ filter_form.month }}
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Current Month Budget Summary -->
+  {% if current_budget %}
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">{{ current_month_name }} Budget</h5>
+          <a href="{% url 'finance:budget_allocate' budget_uid=current_budget.uid %}" class="btn btn-sm btn-outline-primary">
+            Edit Allocations
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+              <div class="card h-100 border-0">
+                <div class="card-body text-center">
+                  <h6 class="card-subtitle mb-2 text-muted">Total Income</h6>
+                  <h3 class="card-title">${{ current_budget.total_income|floatformat:2 }}</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+              <div class="card h-100 border-0">
+                <div class="card-body text-center">
+                  <h6 class="card-subtitle mb-2 text-muted">Total Spent</h6>
+                  {% with budget_summaries|first as summary %}
+                  <h3 class="card-title">${{ summary.total_spent|floatformat:2 }}</h3>
+                  <div class="progress">
+                    <div class="progress-bar bg-{{ summary.color }}" role="progressbar"
+                         style="width: {{ summary.percent_spent|floatformat:0 }}%"
+                         aria-valuenow="{{ summary.percent_spent|floatformat:0 }}" 
+                         aria-valuemin="0" aria-valuemax="100">
+                      {{ summary.percent_spent|floatformat:0 }}%
+                    </div>
+                  </div>
+                  {% endwith %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card h-100 border-0">
+                <div class="card-body text-center">
+                  <h6 class="card-subtitle mb-2 text-muted">Remaining</h6>
+                  {% with budget_summaries|first as summary %}
+                  <h3 class="card-title">${{ summary.total_remaining|floatformat:2 }}</h3>
+                  <small class="text-muted">
+                    {% if summary.status == 'over_budget' %}
+                    You've exceeded your budget
+                    {% elif summary.status == 'warning' %}
+                    Watch your spending
+                    {% elif summary.status == 'on_track' %}
+                    You're on track
+                    {% else %}
+                    Some income is unallocated
+                    {% endif %}
+                  </small>
+                  {% endwith %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Category Allocations and Spending -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Category Allocations</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th class="text-end">Allocated</th>
+                  <th class="text-end">Spent</th>
+                  <th class="text-end">Remaining</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in current_allocations %}
+                <tr>
+                  <td>{{ item.allocation.category.name }}</td>
+                  <td class="text-end">${{ item.allocation.allocated_amount|floatformat:2 }}</td>
+                  <td class="text-end">${{ item.allocation.spent_amount|floatformat:2 }}</td>
+                  <td class="text-end">${{ item.allocation.remaining_amount|floatformat:2 }}</td>
+                  <td>
+                    <div class="progress">
+                      <div class="progress-bar bg-{{ item.color }}" role="progressbar" 
+                           style="width: {{ item.percent_spent|floatformat:0 }}%" 
+                           aria-valuenow="{{ item.percent_spent|floatformat:0 }}" 
+                           aria-valuemin="0" aria-valuemax="100">
+                        {{ item.percent_spent|floatformat:0 }}%
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center">
+                    No allocations found. 
+                    <a href="{% url 'finance:budget_allocate' budget_uid=current_budget.uid %}">
+                      Set up your budget allocations
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    <h5>No budget found for the current month</h5>
+    <p>You haven't created a budget yet for this month. Would you like to create one now?</p>
+    <a href="{% url 'finance:budget_setup' %}" class="btn btn-primary">Create Budget</a>
+  </div>
+  {% endif %}
+  
+  <!-- Budget History -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Budget History</h5>
+        </div>
+        <div class="card-body">
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for summary in budget_summaries %}
+            {% if not forloop.first %}
+            <div class="col">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title">{{ summary.month_name }}</h5>
+                  <p class="mb-1">Income: ${{ summary.budget.total_income|floatformat:2 }}</p>
+                  <p class="mb-1">Spent: ${{ summary.total_spent|floatformat:2 }}</p>
+                  <div class="progress mb-2">
+                    <div class="progress-bar bg-{{ summary.color }}" role="progressbar" 
+                         style="width: {{ summary.percent_spent|floatformat:0 }}%" 
+                         aria-valuenow="{{ summary.percent_spent|floatformat:0 }}" 
+                         aria-valuemin="0" aria-valuemax="100">
+                      {{ summary.percent_spent|floatformat:0 }}%
+                    </div>
+                  </div>
+                  <a href="{% url 'finance:budget_setup_month' year=summary.budget.month.year month=summary.budget.month.month %}" 
+                     class="btn btn-sm btn-outline-secondary">View</a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="col-12 text-center">
+              <p>No budget history available.</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Any additional JavaScript for the budget dashboard
+  });
+</script>
+{% endblock %}

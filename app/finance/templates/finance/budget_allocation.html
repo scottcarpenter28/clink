@@ -1,0 +1,214 @@
+{% extends 'finance/base.html' %}
+{% load static %}
+
+{% block title %}Budget Allocations{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="mb-3">Budget Allocations</h2>
+      <p class="lead">Allocate your income of ${{ budget.total_income|floatformat:2 }} for {{ budget.month|date:"F Y" }}</p>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h5 class="mb-0">Expense Categories</h5>
+        </div>
+        <div class="col-auto" id="allocation-summary">
+          <span class="badge bg-primary">Allocated: $<span id="total-allocated">0.00</span></span>
+          <span class="badge bg-info">Remaining: $<span id="total-remaining">{{ budget.total_income|floatformat:2 }}</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form method="post" id="allocation-form">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        
+        <div class="alert alert-info mb-4">
+          <strong>Zero-Based Budgeting:</strong> You need to allocate all your income (${{ budget.total_income|floatformat:2 }}) 
+          across categories until your remaining amount reaches $0.00.
+        </div>
+        
+        {% if formset.non_form_errors %}
+        <div class="alert alert-danger">
+          {% for error in formset.non_form_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th style="width: 200px;">Allocated Amount ($)</th>
+                <th style="width: 50px;">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for form in formset %}
+              <tr class="allocation-row {% if form.DELETE.value %}d-none{% endif %}">
+                <td>
+                  {{ form.category }}
+                  {{ form.allocation_uid }}
+                  {% if form.category.errors %}
+                  <div class="invalid-feedback d-block">
+                    {{ form.category.errors }}
+                  </div>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    {{ form.allocated_amount }}
+                  </div>
+                  {% if form.allocated_amount.errors %}
+                  <div class="invalid-feedback d-block">
+                    {{ form.allocated_amount.errors }}
+                  </div>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="form-check">
+                    {{ form.DELETE }}
+                    <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">
+                      <i class="bi bi-trash"></i>
+                    </label>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="row mt-3">
+          <div class="col-md-6">
+            <button type="button" id="add-allocation-button" class="btn btn-outline-secondary">
+              <i class="bi bi-plus"></i> Add Category
+            </button>
+          </div>
+          <div class="col-md-6 text-end">
+            <a href="{{ cancel_url }}" class="btn btn-outline-secondary me-2">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Budget</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Allocation Tips</h5>
+    </div>
+    <div class="card-body">
+      <ul class="mb-0">
+        <li>Prioritize essential expenses like housing, utilities, and groceries</li>
+        <li>Include savings categories for future goals</li>
+        <li>Don't forget periodic expenses like insurance or annual subscriptions</li>
+        <li>Consider creating an "Emergency Fund" category</li>
+        <li>Unspent funds will roll over to the next month's budget</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const budget_total = {{ budget.total_income }};
+    const formsetPrefix = "{{ formset.prefix }}";
+    const totalAllocated = document.getElementById('total-allocated');
+    const totalRemaining = document.getElementById('total-remaining');
+    const allocationForm = document.getElementById('allocation-form');
+    const addAllocationButton = document.getElementById('add-allocation-button');
+    
+    // Function to update the management form when adding rows
+    function updateManagementForm() {
+      const totalForms = document.getElementById('id_' + formsetPrefix + '-TOTAL_FORMS');
+      totalForms.value = document.querySelectorAll('.allocation-row:not(.d-none)').length;
+    }
+    
+    // Function to calculate totals
+    function calculateTotals() {
+      let allocated = 0;
+      
+      // Sum all allocation inputs
+      document.querySelectorAll('.allocation-row:not(.d-none) input[id$="-allocated_amount"]').forEach(input => {
+        allocated += parseFloat(input.value || 0);
+      });
+      
+      // Update the display
+      totalAllocated.textContent = allocated.toFixed(2);
+      const remaining = budget_total - allocated;
+      totalRemaining.textContent = remaining.toFixed(2);
+      
+      // Highlight if we're over or under budget
+      if (Math.abs(remaining) < 0.01) {
+        // Balanced budget (within 1 cent)
+        totalRemaining.parentElement.className = 'badge bg-success';
+      } else if (remaining < 0) {
+        // Over budget
+        totalRemaining.parentElement.className = 'badge bg-danger';
+      } else {
+        // Under budget
+        totalRemaining.parentElement.className = 'badge bg-info';
+      }
+    }
+    
+    // Add event listeners to all amount inputs
+    function addInputListeners() {
+      document.querySelectorAll('.allocation-row input[id$="-allocated_amount"]').forEach(input => {
+        input.addEventListener('input', calculateTotals);
+      });
+      
+      document.querySelectorAll('.allocation-row input[id$="-DELETE"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          // Hide the row when delete is checked
+          this.closest('tr').classList.toggle('d-none', this.checked);
+          calculateTotals();
+        });
+      });
+    }
+    
+    // Clone the last form to create a new one
+    addAllocationButton.addEventListener('click', function() {
+      const lastRow = document.querySelector('.allocation-row:last-of-type');
+      const newRow = lastRow.cloneNode(true);
+      const formIndex = parseInt(document.getElementById('id_' + formsetPrefix + '-TOTAL_FORMS').value);
+      
+      // Update form indices
+      newRow.innerHTML = newRow.innerHTML.replaceAll(
+        new RegExp(formsetPrefix + '-\\d+', 'g'), 
+        formsetPrefix + '-' + formIndex
+      );
+      
+      // Reset form values
+      newRow.querySelector('select[id$="-category"]').selectedIndex = 0;
+      newRow.querySelector('input[id$="-allocated_amount"]').value = '0.00';
+      newRow.querySelector('input[id$="-DELETE"]').checked = false;
+      newRow.classList.remove('d-none');
+      
+      // Insert the new row
+      lastRow.after(newRow);
+      
+      // Update management form
+      updateManagementForm();
+      
+      // Add listeners to the new inputs
+      addInputListeners();
+    });
+    
+    // Initialize
+    addInputListeners();
+    calculateTotals();
+  });
+</script>
+{% endblock %}

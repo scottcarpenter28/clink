@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.utils import timezone
+from datetime import datetime
 
+from finance.models import Budget, Category
 from finance.utilities.transaction_utils import TransactionProcessor
 
 
@@ -14,6 +17,41 @@ def handle_invalid_transaction_type(request):
 def handle_successful_transaction(request, processor, transaction):
     success_message = processor.get_success_message(transaction)
     messages.success(request, success_message)
+
+    # For income transactions, check if there's a budget for this month
+    if processor.transaction_type == 'income':
+        # Get current month (first day of month)
+        today = timezone.now().date()
+        month_start = datetime(today.year, today.month, 1).date()
+
+        # Check if a budget exists for this month
+        budget_exists = Budget.objects.filter(
+            user=request.user,
+            month=month_start,
+            is_active=True
+        ).exists()
+
+        if not budget_exists:
+            # Calculate the total income for this month
+            category_ids = Category.objects.filter(category_type='income').values_list('id', flat=True)
+            income_amount = transaction.amount  # Start with this transaction
+
+            # Offer budget setup with this income amount
+            messages.info(
+                request,
+                f"Would you like to create a budget for {month_start.strftime('%B %Y')} "
+                f"with your income of ${income_amount:.2f}?"
+            )
+
+            # Redirect to budget setup with pre-filled income
+            session_data = {
+                'setup_budget_income': income_amount,
+                'setup_budget_month': month_start.isoformat()
+            }
+            request.session['budget_setup'] = session_data
+
+            return redirect('finance:budget_setup')
+
     return redirect('finance:dashboard')
 
 
