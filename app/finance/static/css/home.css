@@ -1,0 +1,79 @@
+.home-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.welcome-section {
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+}
+
+.welcome-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.welcome-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 3rem;
+}
+
+.action-section {
+    margin-top: 2rem;
+}
+
+.btn-logout {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    background-color: var(--color-secondary);
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #8d9b87;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(162, 175, 155, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-logout:active {
+    transform: translateY(0);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease;
+}
+
+@media (max-width: 576px) {
+    .welcome-title {
+        font-size: 2rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 1rem;
+    }
+}

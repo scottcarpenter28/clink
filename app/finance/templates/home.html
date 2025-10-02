@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="home-container fade-in">
+    <div class="welcome-section">
+        <h1 class="welcome-title">Welcome, {{ user.username }}!</h1>
+        <p class="welcome-subtitle">You're successfully logged in</p>
+        
+        <div class="action-section">
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
