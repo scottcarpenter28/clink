@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 
@@ -51,8 +50,3 @@ def logout_view(request: HttpRequest) -> HttpResponse:
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect("login")
-
-
-@login_required
-def home_view(request: HttpRequest) -> HttpResponse:
-    return render(request, "home.html")
