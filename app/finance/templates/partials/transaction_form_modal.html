@@ -8,6 +8,8 @@
             <div class="modal-body">
                 <form id="transactionForm" autocomplete="off">
                     <input type="hidden" id="transaction-id" name="transaction_id">
+                    <input type="hidden" id="transaction-year" value="{{ year }}">
+                    <input type="hidden" id="transaction-month" value="{{ month }}">
 
                     <div class="mb-3">
                         <label for="transaction-type" class="form-label">Type</label>
@@ -24,7 +26,10 @@
 
                     <div class="mb-3">
                         <label for="transaction-category" class="form-label">Category</label>
-                        <input type="text" class="form-control" id="transaction-category" name="category" required>
+                        <select class="form-select" id="transaction-category" name="category" required disabled>
+                            <option value="">Select type first...</option>
+                        </select>
+                        <input type="text" class="form-control d-none" id="transaction-category-manual" name="category_manual">
                     </div>
 
                     <div class="mb-3">

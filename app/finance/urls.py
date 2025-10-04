@@ -10,6 +10,7 @@ from finance.views import (
     update_budget,
     get_budget,
     delete_budget,
+    get_budget_categories,
     create_transaction,
     update_transaction,
     get_transaction,
@@ -26,6 +27,11 @@ urlpatterns = [
     path("budgets/<int:budget_id>/", get_budget, name="get_budget"),
     path("budgets/<int:budget_id>/update/", update_budget, name="update_budget"),
     path("budgets/<int:budget_id>/delete/", delete_budget, name="delete_budget"),
+    path(
+        "budgets/<int:year>/<int:month>/<str:type>/categories/",
+        get_budget_categories,
+        name="get_budget_categories",
+    ),
     path("transactions/create/", create_transaction, name="create_transaction"),
     path("transactions/<int:transaction_id>/", get_transaction, name="get_transaction"),
     path(

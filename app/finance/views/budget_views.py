@@ -77,3 +77,25 @@ def delete_budget(request: HttpRequest, budget_id: int) -> HttpResponse:
     budget = get_object_or_404(Budget, id=budget_id, user=request.user)
     budget.delete()
     return JsonResponse({"success": True})
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_budget_categories(
+    request: HttpRequest, year: int, month: int, type: str
+) -> HttpResponse:
+    try:
+        type_value = TransactionType[type].value
+    except KeyError:
+        return JsonResponse({"success": False, "error": "Invalid type"}, status=400)
+
+    categories = (
+        Budget.objects.filter(
+            user=request.user, budget_year=year, budget_month=month, type=type_value
+        )
+        .values_list("category", flat=True)
+        .distinct()
+        .order_by("category")
+    )
+
+    return JsonResponse({"success": True, "categories": list(categories)})

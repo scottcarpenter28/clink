@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const saveBudgetBtn = document.getElementById("saveBudgetBtn");
   const saveTransactionBtn = document.getElementById("saveTransactionBtn");
 
+  let activeTabId = null;
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -22,6 +24,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const csrftoken = getCookie("csrftoken");
+
+  function restoreActiveTab() {
+    const hash = window.location.hash;
+    if (hash) {
+      const tabId = hash.substring(1);
+      const tabButton = document.getElementById(tabId);
+      if (tabButton && tabButton.classList.contains("nav-link")) {
+        const tab = new bootstrap.Tab(tabButton);
+        tab.show();
+      }
+    }
+  }
+
+  restoreActiveTab();
 
   function showError(element, message) {
     element.textContent = message;
@@ -49,24 +65,125 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("transactionFormModalLabel").textContent =
       "Add Transaction";
     hideError(document.getElementById("transaction-form-errors"));
+
+    const categorySelect = document.getElementById("transaction-category");
+    const categoryManual = document.getElementById(
+      "transaction-category-manual",
+    );
+
+    categorySelect.innerHTML = '<option value="">Select type first...</option>';
+    categorySelect.disabled = true;
+    categorySelect.classList.remove("d-none");
+    categorySelect.setAttribute("required", "required");
+
+    categoryManual.value = "";
+    categoryManual.classList.add("d-none");
+    categoryManual.removeAttribute("required");
   }
 
   if (budgetModal) {
     budgetModal.addEventListener("show.bs.modal", function (event) {
       const button = event.relatedTarget;
+      const budgetTypeField = document.getElementById("budget-type");
+
       if (button && button.classList.contains("btn-add-budget")) {
         const type = button.getAttribute("data-type");
         if (type) {
-          document.getElementById("budget-type").value = type.toUpperCase();
+          budgetTypeField.value = type.toUpperCase();
+          budgetTypeField.setAttribute("readonly", "readonly");
+
+          const activeTab = document.querySelector(
+            ".budget-tabs .nav-link.active",
+          );
+          if (activeTab) {
+            activeTabId = activeTab.id;
+          }
         }
+      } else {
+        budgetTypeField.removeAttribute("readonly");
+        activeTabId = null;
       }
     });
 
     budgetModal.addEventListener("hidden.bs.modal", resetBudgetForm);
   }
 
+  function fetchBudgetCategories(year, month, type) {
+    return fetch(`/budgets/${year}/${month}/${type}/categories/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          return data.categories;
+        }
+        return [];
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+        return [];
+      });
+  }
+
+  function populateCategoryDropdown(categories) {
+    const categorySelect = document.getElementById("transaction-category");
+    const categoryManual = document.getElementById(
+      "transaction-category-manual",
+    );
+
+    categorySelect.innerHTML = "";
+
+    if (categories.length > 0) {
+      categorySelect.classList.remove("d-none");
+      categoryManual.classList.add("d-none");
+      categoryManual.removeAttribute("required");
+      categorySelect.setAttribute("required", "required");
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Select category...";
+      categorySelect.appendChild(defaultOption);
+
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+      });
+
+      categorySelect.disabled = false;
+    } else {
+      categorySelect.classList.add("d-none");
+      categoryManual.classList.remove("d-none");
+      categorySelect.removeAttribute("required");
+      categoryManual.setAttribute("required", "required");
+      categoryManual.placeholder = "No budget categories - enter manually";
+      categoryManual.disabled = false;
+    }
+  }
+
   if (transactionModal) {
     transactionModal.addEventListener("hidden.bs.modal", resetTransactionForm);
+
+    const transactionTypeSelect = document.getElementById("transaction-type");
+    if (transactionTypeSelect) {
+      transactionTypeSelect.addEventListener("change", function () {
+        const type = this.value;
+        const year = document.getElementById("transaction-year").value;
+        const month = document.getElementById("transaction-month").value;
+
+        if (type && year && month) {
+          fetchBudgetCategories(year, month, type).then((categories) => {
+            populateCategoryDropdown(categories);
+          });
+        } else {
+          const categorySelect = document.getElementById(
+            "transaction-category",
+          );
+          categorySelect.innerHTML =
+            '<option value="">Select type first...</option>';
+          categorySelect.disabled = true;
+        }
+      });
+    }
   }
 
   if (saveBudgetBtn) {
@@ -89,6 +206,9 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
+            if (activeTabId) {
+              window.location.hash = activeTabId;
+            }
             location.reload();
           } else {
             const errors = Object.values(data.errors).flat().join(", ");
@@ -106,6 +226,23 @@ document.addEventListener("DOMContentLoaded", function () {
       const transactionId = document.getElementById("transaction-id").value;
       const formData = new FormData(transactionForm);
       const errorElement = document.getElementById("transaction-form-errors");
+
+      const categorySelect = document.getElementById("transaction-category");
+      const categoryManual = document.getElementById(
+        "transaction-category-manual",
+      );
+
+      if (
+        !categorySelect.classList.contains("d-none") &&
+        categorySelect.value
+      ) {
+        formData.set("category", categorySelect.value);
+      } else if (
+        !categoryManual.classList.contains("d-none") &&
+        categoryManual.value
+      ) {
+        formData.set("category", categoryManual.value);
+      }
 
       hideError(errorElement);
 
@@ -184,12 +321,37 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((data) => {
           document.getElementById("transaction-id").value = data.id;
           document.getElementById("transaction-type").value = data.type;
-          document.getElementById("transaction-category").value = data.category;
           document.getElementById("transaction-amount").value = data.amount;
           document.getElementById("transaction-date").value =
             data.date_of_expense;
           document.getElementById("transactionFormModalLabel").textContent =
             "Edit Transaction";
+
+          const year = document.getElementById("transaction-year").value;
+          const month = document.getElementById("transaction-month").value;
+
+          if (data.type && year && month) {
+            fetchBudgetCategories(year, month, data.type).then((categories) => {
+              populateCategoryDropdown(categories);
+
+              const categorySelect = document.getElementById(
+                "transaction-category",
+              );
+              const categoryManual = document.getElementById(
+                "transaction-category-manual",
+              );
+
+              if (categories.includes(data.category)) {
+                categorySelect.value = data.category;
+              } else {
+                categorySelect.classList.add("d-none");
+                categoryManual.classList.remove("d-none");
+                categorySelect.removeAttribute("required");
+                categoryManual.setAttribute("required", "required");
+                categoryManual.value = data.category;
+              }
+            });
+          }
 
           const modal = new bootstrap.Modal(transactionModal);
           modal.show();
