@@ -9,7 +9,7 @@ from finance.enums.transaction_enums import TransactionType
 def calculate_total_by_types(
     transactions: QuerySet[Transaction], types: list[TransactionType]
 ) -> Decimal:
-    result = transactions.filter(type__in=[t.value for t in types]).aggregate(
+    result = transactions.filter(type__in=[t.name for t in types]).aggregate(
         total=Sum("amount_in_cents")
     )["total"]
     return Decimal(result or 0) / 100

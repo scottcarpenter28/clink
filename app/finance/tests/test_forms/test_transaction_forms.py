@@ -92,8 +92,8 @@ class TransactionFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("category", form.errors)
 
-    def test_future_date_fails(self):
-        future_date = date.today() + timedelta(days=1)
+    def test_future_date_valid(self):
+        future_date = date.today() + timedelta(days=30)
         data = {
             "type": TransactionType.NEED.name,
             "category": "Groceries",
@@ -101,8 +101,8 @@ class TransactionFormTests(TestCase):
             "date_of_expense": future_date,
         }
         form = TransactionForm(data=data)
-        self.assertFalse(form.is_valid())
-        self.assertIn("date_of_expense", form.errors)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["date_of_expense"], future_date)
 
     def test_past_date_valid(self):
         past_date = date.today() - timedelta(days=7)

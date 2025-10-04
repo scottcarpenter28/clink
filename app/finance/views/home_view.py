@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+import calendar
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -31,17 +32,39 @@ def get_transactions_for_month(user, year: int, month: int):
     )
 
 
+def get_previous_month(year: int, month: int) -> tuple[int, int]:
+    if month == 1:
+        return year - 1, 12
+    return year, month - 1
+
+
+def get_next_month(year: int, month: int) -> tuple[int, int]:
+    if month == 12:
+        return year + 1, 1
+    return year, month + 1
+
+
 def build_home_context(user, year: int, month: int) -> dict:
     budgets = get_budgets_for_month(user, year, month)
     transactions = get_transactions_for_month(user, year, month)
 
+    prev_year, prev_month = get_previous_month(year, month)
+    next_year, next_month = get_next_month(year, month)
+    month_name = calendar.month_name[month]
+
     return {
         "year": year,
         "month": month,
+        "month_name": month_name,
+        "prev_year": prev_year,
+        "prev_month": prev_month,
+        "next_year": next_year,
+        "next_month": next_month,
         "total_income": calculate_total_income(transactions),
         "total_spent": calculate_total_spent(transactions),
         "total_saved": calculate_total_saved(transactions),
         "budget_data": group_budgets_with_actuals(budgets, transactions),
+        "transactions": transactions,
     }
 
 

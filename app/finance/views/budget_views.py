@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -55,6 +55,20 @@ def update_budget(request: HttpRequest, budget_id: int) -> HttpResponse:
         return JsonResponse({"success": True, "budget_id": budget.id})
 
     return JsonResponse({"success": False, "errors": form.errors}, status=400)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_budget(request: HttpRequest, budget_id: int) -> HttpResponse:
+    budget = get_object_or_404(Budget, id=budget_id, user=request.user)
+    return JsonResponse(
+        {
+            "id": budget.id,
+            "type": budget.type,
+            "category": budget.category,
+            "amount": float(budget.amount_dollars),
+        }
+    )
 
 
 @login_required

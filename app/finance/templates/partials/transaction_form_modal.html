@@ -1,0 +1,52 @@
+<div class="modal fade" id="transactionFormModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transactionFormModalLabel">Add Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm" autocomplete="off">
+                    <input type="hidden" id="transaction-id" name="transaction_id">
+
+                    <div class="mb-3">
+                        <label for="transaction-type" class="form-label">Type</label>
+                        <select class="form-select" id="transaction-type" name="type" required>
+                            <option value="">Select type...</option>
+                            <option value="INCOME">Income</option>
+                            <option value="NEED">Need</option>
+                            <option value="WANT">Want</option>
+                            <option value="DEBTS">Debts</option>
+                            <option value="SAVINGS">Savings</option>
+                            <option value="INVESTING">Investing</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transaction-category" class="form-label">Category</label>
+                        <input type="text" class="form-control" id="transaction-category" name="category" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transaction-amount" class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="transaction-amount" name="amount" step="0.01" min="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transaction-date" class="form-label">Transaction Date</label>
+                        <input type="date" class="form-control" id="transaction-date" name="date_of_expense" required>
+                    </div>
+
+                    <div class="alert alert-danger d-none" id="transaction-form-errors"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveTransactionBtn">Save Transaction</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -27,14 +27,14 @@ class TransactionCalculatorTests(TestCase):
     def test_calculate_total_by_types_sums_single_type(self):
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
         )
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Bonus",
             amount_in_cents=100000,
             date_of_expense="2025-10-02",
@@ -47,21 +47,21 @@ class TransactionCalculatorTests(TestCase):
     def test_calculate_total_by_types_sums_multiple_types(self):
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Rent",
             amount_in_cents=150000,
             date_of_expense="2025-10-01",
         )
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.WANT.value,
+            type=TransactionType.WANT.name,
             category="Entertainment",
             amount_in_cents=5000,
             date_of_expense="2025-10-02",
         )
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.DEBTS.value,
+            type=TransactionType.DEBTS.name,
             category="Credit Card",
             amount_in_cents=10000,
             date_of_expense="2025-10-03",
@@ -77,7 +77,7 @@ class TransactionCalculatorTests(TestCase):
     def test_calculate_total_income(self):
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
@@ -90,14 +90,14 @@ class TransactionCalculatorTests(TestCase):
     def test_calculate_total_spent(self):
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Rent",
             amount_in_cents=150000,
             date_of_expense="2025-10-01",
         )
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.WANT.value,
+            type=TransactionType.WANT.name,
             category="Shopping",
             amount_in_cents=5000,
             date_of_expense="2025-10-02",
@@ -110,14 +110,14 @@ class TransactionCalculatorTests(TestCase):
     def test_calculate_total_saved(self):
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.SAVINGS.value,
+            type=TransactionType.SAVINGS.name,
             category="Emergency Fund",
             amount_in_cents=50000,
             date_of_expense="2025-10-01",
         )
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INVESTING.value,
+            type=TransactionType.INVESTING.name,
             category="401k",
             amount_in_cents=30000,
             date_of_expense="2025-10-02",
@@ -130,14 +130,14 @@ class TransactionCalculatorTests(TestCase):
     def test_calculate_total_excludes_other_types(self):
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
         )
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Rent",
             amount_in_cents=150000,
             date_of_expense="2025-10-02",

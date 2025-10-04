@@ -1,21 +1,56 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Dashboard - {{ year }}/{{ month|stringformat:"02d" }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block header %}
+<nav class="dashboard-nav">
+    <div class="container-fluid">
+        <div class="nav-content">
+            <h1 class="app-title">Clink Finance</h1>
+            <div class="nav-actions">
+                <div class="month-nav">
+                    <a href="{% url 'home_with_date' year=prev_year month=prev_month %}" class="btn-month-nav">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                    </a>
+                    <span class="current-month">{{ month_name }} {{ year }}</span>
+                    <a href="{% url 'home_with_date' year=next_year month=next_month %}" class="btn-month-nav">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </a>
+                </div>
+                <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
 {% endblock %}
 
 {% block content %}
-<div class="home-container fade-in">
-    <div class="welcome-section">
-        <h1 class="welcome-title">Welcome, {{ user.username }}!</h1>
-        <p class="welcome-subtitle">You're successfully logged in</p>
-        
-        <div class="action-section">
-            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+<div class="dashboard-container">
+    <div class="container-fluid">
+        {% include 'partials/monthly_summary_cards.html' %}
+
+        <div class="budget-section mb-4">
+            <h2 class="section-title">Budget Tracking</h2>
+            {% include 'partials/budget_tabs.html' %}
         </div>
+
+        {% include 'partials/transaction_section.html' %}
     </div>
 </div>
+
+{% include 'partials/budget_form_modal.html' %}
+{% include 'partials/transaction_form_modal.html' %}
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

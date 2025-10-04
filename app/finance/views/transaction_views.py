@@ -36,6 +36,21 @@ def update_transaction(request: HttpRequest, transaction_id: int) -> HttpRespons
 
 
 @login_required
+@require_http_methods(["GET"])
+def get_transaction(request: HttpRequest, transaction_id: int) -> HttpResponse:
+    transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
+    return JsonResponse(
+        {
+            "id": transaction.id,
+            "type": transaction.type,
+            "category": transaction.category,
+            "amount": float(transaction.amount_dollars),
+            "date_of_expense": transaction.date_of_expense.strftime("%Y-%m-%d"),
+        }
+    )
+
+
+@login_required
 @require_http_methods(["POST", "DELETE"])
 def delete_transaction(request: HttpRequest, transaction_id: int) -> HttpResponse:
     transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)

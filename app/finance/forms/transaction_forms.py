@@ -32,8 +32,6 @@ class TransactionForm(forms.ModelForm):
 
     def clean_date_of_expense(self) -> date:
         date_of_expense = self.cleaned_data.get("date_of_expense")
-        if date_of_expense and date_of_expense > date.today():
-            raise forms.ValidationError("Date of expense cannot be in the future.")
         return date_of_expense
 
     def save(self, commit: bool = True) -> Transaction:

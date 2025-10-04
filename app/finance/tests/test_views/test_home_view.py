@@ -134,3 +134,32 @@ class HomeViewTests(TestCase):
         self.assertEqual(len(budget_data[TransactionType.INCOME.value]), 1)
         self.assertEqual(len(budget_data[TransactionType.NEED.value]), 1)
         self.assertEqual(len(budget_data[TransactionType.WANT.value]), 0)
+
+    def test_future_transactions_not_shown_in_current_month(self):
+        Transaction.objects.create(
+            user=self.user,
+            type=TransactionType.NEED.value,
+            category="Groceries",
+            amount_in_cents=10000,
+            date_of_expense="2025-10-15",
+        )
+
+        Transaction.objects.create(
+            user=self.user,
+            type=TransactionType.WANT.value,
+            category="Entertainment",
+            amount_in_cents=5000,
+            date_of_expense="2025-11-20",
+        )
+
+        response = self.client.get(
+            reverse("home_with_date", kwargs={"year": 2025, "month": 10})
+        )
+
+        self.assertEqual(response.context["total_spent"], Decimal("100.00"))
+
+        future_response = self.client.get(
+            reverse("home_with_date", kwargs={"year": 2025, "month": 11})
+        )
+
+        self.assertEqual(future_response.context["total_spent"], Decimal("50.00"))
