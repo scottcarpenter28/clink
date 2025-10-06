@@ -33,21 +33,21 @@
 
 <div class="tab-content budget-tab-content">
     <div class="tab-pane fade show active" id="income-panel" role="tabpanel">
-        {% include 'partials/budget_table.html' with budgets=budget_data.Income type="Income" %}
+        {% include 'partials/budget_table.html' with budgets=budget_data.Income type="Income" totals=budget_totals.Income %}
     </div>
     <div class="tab-pane fade" id="needs-panel" role="tabpanel">
-        {% include 'partials/budget_table.html' with budgets=budget_data.Need type="Need" %}
+        {% include 'partials/budget_table.html' with budgets=budget_data.Need type="Need" totals=budget_totals.Need %}
     </div>
     <div class="tab-pane fade" id="wants-panel" role="tabpanel">
-        {% include 'partials/budget_table.html' with budgets=budget_data.Want type="Want" %}
+        {% include 'partials/budget_table.html' with budgets=budget_data.Want type="Want" totals=budget_totals.Want %}
     </div>
     <div class="tab-pane fade" id="debts-panel" role="tabpanel">
-        {% include 'partials/budget_table.html' with budgets=budget_data.Debts type="Debts" %}
+        {% include 'partials/budget_table.html' with budgets=budget_data.Debts type="Debts" totals=budget_totals.Debts %}
     </div>
     <div class="tab-pane fade" id="savings-panel" role="tabpanel">
-        {% include 'partials/budget_table.html' with budgets=budget_data.Savings type="Savings" %}
+        {% include 'partials/budget_table.html' with budgets=budget_data.Savings type="Savings" totals=budget_totals.Savings %}
     </div>
     <div class="tab-pane fade" id="investing-panel" role="tabpanel">
-        {% include 'partials/budget_table.html' with budgets=budget_data.Investing type="Investing" %}
+        {% include 'partials/budget_table.html' with budgets=budget_data.Investing type="Investing" totals=budget_totals.Investing %}
     </div>
 </div>

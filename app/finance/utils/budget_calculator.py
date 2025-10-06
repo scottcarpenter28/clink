@@ -38,7 +38,7 @@ def create_budget_line_items_for_type(
     budgets: QuerySet[Budget],
     transactions: QuerySet[Transaction],
 ) -> list[dict]:
-    type_budgets = budgets.filter(type=transaction_type.value)
+    type_budgets = budgets.filter(type=transaction_type.name)
     budget_items = []
 
     for budget in type_budgets:
@@ -47,6 +47,18 @@ def create_budget_line_items_for_type(
         budget_items.append(line_item.to_dict())
 
     return budget_items
+
+
+def calculate_totals_for_budget_items(budget_items: list[dict]) -> dict:
+    total_expected = sum(item["expected"] for item in budget_items)
+    total_actual = sum(item["actual"] for item in budget_items)
+    total_remaining = sum(item["remaining"] for item in budget_items)
+
+    return {
+        "expected": total_expected,
+        "actual": total_actual,
+        "remaining": total_remaining,
+    }
 
 
 def group_budgets_with_actuals(

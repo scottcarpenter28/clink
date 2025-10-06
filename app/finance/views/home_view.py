@@ -12,7 +12,10 @@ from finance.utils.transaction_calculator import (
     calculate_total_spent,
     calculate_total_saved,
 )
-from finance.utils.budget_calculator import group_budgets_with_actuals
+from finance.utils.budget_calculator import (
+    group_budgets_with_actuals,
+    calculate_totals_for_budget_items,
+)
 
 
 def get_current_year_and_month(
@@ -52,6 +55,12 @@ def build_home_context(user, year: int, month: int) -> dict:
     next_year, next_month = get_next_month(year, month)
     month_name = calendar.month_name[month]
 
+    budget_data = group_budgets_with_actuals(budgets, transactions)
+    budget_totals = {
+        budget_type: calculate_totals_for_budget_items(items)
+        for budget_type, items in budget_data.items()
+    }
+
     return {
         "year": year,
         "month": month,
@@ -63,7 +72,8 @@ def build_home_context(user, year: int, month: int) -> dict:
         "total_income": calculate_total_income(transactions),
         "total_spent": calculate_total_spent(transactions),
         "total_saved": calculate_total_saved(transactions),
-        "budget_data": group_budgets_with_actuals(budgets, transactions),
+        "budget_data": budget_data,
+        "budget_totals": budget_totals,
         "transactions": transactions,
     }
 

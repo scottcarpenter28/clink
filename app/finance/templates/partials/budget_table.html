@@ -47,6 +47,17 @@
                         </tr>
                     {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr class="budget-totals-row">
+                        <td class="totals-label">Total</td>
+                        <td class="text-end amount-expected">${{ totals.expected|floatformat:2 }}</td>
+                        <td class="text-end amount-actual">${{ totals.actual|floatformat:2 }}</td>
+                        <td class="text-end amount-remaining {% if totals.remaining < 0 %}over-budget{% endif %}">
+                            ${{ totals.remaining|floatformat:2 }}
+                        </td>
+                        <td class="text-center"></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     {% else %}

@@ -239,6 +239,21 @@
     vertical-align: middle;
 }
 
+.budget-table tfoot {
+    border-top: 2px solid var(--color-secondary);
+}
+
+.budget-totals-row td {
+    font-weight: 600;
+    padding: 1rem 0.75rem;
+    background-color: var(--color-fourth);
+}
+
+.totals-label {
+    color: #333;
+    font-size: 1rem;
+}
+
 .category-name {
     font-weight: 500;
     color: #333;
@@ -248,7 +263,7 @@
 .amount-actual,
 .amount-remaining,
 .amount {
-    font-family: 'Courier New', monospace;
+    font-family: "Courier New", monospace;
     font-weight: 600;
 }
 

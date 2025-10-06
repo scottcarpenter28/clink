@@ -15,7 +15,6 @@ def create_budget(request: HttpRequest) -> HttpResponse:
 
     if form.is_valid():
         type_name = form.cleaned_data["type"]
-        type_value = TransactionType[type_name].value
         category = form.cleaned_data["category"]
         amount_dollars = form.cleaned_data["amount"]
 
@@ -25,7 +24,7 @@ def create_budget(request: HttpRequest) -> HttpResponse:
         budget, created = Budget.objects.update_or_create(
             user=request.user,
             category=category,
-            type=type_value,
+            type=type_name,
             budget_year=int(year),
             budget_month=int(month),
             defaults={"amount_in_cents": int(float(amount_dollars) * 100)},
@@ -46,7 +45,7 @@ def update_budget(request: HttpRequest, budget_id: int) -> HttpResponse:
 
     if form.is_valid():
         type_name = form.cleaned_data["type"]
-        budget.type = TransactionType[type_name].value
+        budget.type = type_name
         budget.category = form.cleaned_data["category"]
         amount_dollars = form.cleaned_data["amount"]
         budget.amount_in_cents = int(float(amount_dollars) * 100)
@@ -85,13 +84,13 @@ def get_budget_categories(
     request: HttpRequest, year: int, month: int, type: str
 ) -> HttpResponse:
     try:
-        type_value = TransactionType[type].value
+        TransactionType[type]
     except KeyError:
         return JsonResponse({"success": False, "error": "Invalid type"}, status=400)
 
     categories = (
         Budget.objects.filter(
-            user=request.user, budget_year=year, budget_month=month, type=type_value
+            user=request.user, budget_year=year, budget_month=month, type=type
         )
         .values_list("category", flat=True)
         .distinct()
