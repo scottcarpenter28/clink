@@ -1,10 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
   const budgetModal = document.getElementById("budgetFormModal");
+  const budgetDeleteModal = document.getElementById("budgetDeleteModal");
   const transactionModal = document.getElementById("transactionFormModal");
+  const transactionDeleteModal = document.getElementById(
+    "transactionDeleteModal",
+  );
   const budgetForm = document.getElementById("budgetForm");
   const transactionForm = document.getElementById("transactionForm");
   const saveBudgetBtn = document.getElementById("saveBudgetBtn");
   const saveTransactionBtn = document.getElementById("saveTransactionBtn");
+  const confirmDeleteBudgetBtn = document.getElementById(
+    "confirmDeleteBudgetBtn",
+  );
+  const confirmDeleteTransactionBtn = document.getElementById(
+    "confirmDeleteTransactionBtn",
+  );
 
   let activeTabId = null;
 
@@ -272,6 +282,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  if (confirmDeleteBudgetBtn) {
+    confirmDeleteBudgetBtn.addEventListener("click", function () {
+      const budgetId = document.getElementById("delete-budget-id").value;
+
+      fetch(`/budgets/${budgetId}/delete/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrftoken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            location.reload();
+          }
+        });
+    });
+  }
+
+  if (confirmDeleteTransactionBtn) {
+    confirmDeleteTransactionBtn.addEventListener("click", function () {
+      const transactionId = document.getElementById(
+        "delete-transaction-id",
+      ).value;
+
+      fetch(`/transactions/${transactionId}/delete/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrftoken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            location.reload();
+          }
+        });
+    });
+  }
+
   document.addEventListener("click", function (event) {
     if (event.target.closest(".btn-edit")) {
       const button = event.target.closest(".btn-edit");
@@ -295,21 +345,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (event.target.closest(".btn-delete")) {
       const button = event.target.closest(".btn-delete");
       const budgetId = button.getAttribute("data-budget-id");
+      const categoryCell = button.closest("tr").querySelector(".category-name");
+      const categoryName = categoryCell ? categoryCell.textContent : "";
 
-      if (confirm("Are you sure you want to delete this budget line?")) {
-        fetch(`/budgets/${budgetId}/delete/`, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": csrftoken,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              location.reload();
-            }
-          });
-      }
+      document.getElementById("delete-budget-id").value = budgetId;
+      document.getElementById("delete-budget-category").textContent =
+        categoryName;
+
+      const modal = new bootstrap.Modal(budgetDeleteModal);
+      modal.show();
     }
 
     if (event.target.closest(".btn-edit-transaction")) {
@@ -361,21 +405,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (event.target.closest(".btn-delete-transaction")) {
       const button = event.target.closest(".btn-delete-transaction");
       const transactionId = button.getAttribute("data-transaction-id");
+      const categoryCell = button.closest("tr").querySelector(".category-name");
+      const categoryName = categoryCell ? categoryCell.textContent : "";
 
-      if (confirm("Are you sure you want to delete this transaction?")) {
-        fetch(`/transactions/${transactionId}/delete/`, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": csrftoken,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              location.reload();
-            }
-          });
-      }
+      document.getElementById("delete-transaction-id").value = transactionId;
+      document.getElementById("delete-transaction-category").textContent =
+        categoryName;
+
+      const modal = new bootstrap.Modal(transactionDeleteModal);
+      modal.show();
     }
   });
 });
