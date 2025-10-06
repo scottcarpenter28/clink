@@ -1,20 +1,31 @@
-from .login_view import login_view
-from .register_view import register_view
-from .dashboard_view import dashboard_view
-from .add_transaction_view import add_transaction_view
-from .add_account_view import add_account_view
-from .transaction_list_view import transaction_list_view
-from .budget_setup_view import budget_setup_view, budget_allocation_view
-from .budget_dashboard_view import budget_dashboard_view
+from finance.views.auth_views import login_view, signup_view, logout_view
+from finance.views.home_view import home_view
+from finance.views.budget_views import (
+    create_budget,
+    update_budget,
+    get_budget,
+    delete_budget,
+    get_budget_categories,
+)
+from finance.views.transaction_views import (
+    create_transaction,
+    update_transaction,
+    get_transaction,
+    delete_transaction,
+)
 
 __all__ = [
-    'login_view',
-    'register_view',
-    'dashboard_view',
-    'add_transaction_view',
-    'add_account_view',
-    'transaction_list_view',
-    'budget_setup_view',
-    'budget_allocation_view',
-    'budget_dashboard_view'
+    "login_view",
+    "signup_view",
+    "logout_view",
+    "home_view",
+    "create_budget",
+    "update_budget",
+    "get_budget",
+    "delete_budget",
+    "get_budget_categories",
+    "create_transaction",
+    "update_transaction",
+    "get_transaction",
+    "delete_transaction",
 ]

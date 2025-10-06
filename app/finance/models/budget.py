@@ -1,23 +1,28 @@
-import uuid
 from django.db import models
-from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from finance.models.base_financial_model import BaseFinancialModel
+from finance.enums import TransactionType
+from typing import override
 
 
-class Budget(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budgets')
-    month = models.DateField()  # Store the first day of the month
-    total_income = models.FloatField(default=0.0)
-    is_active = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+class Budget(BaseFinancialModel):
+    budget_year: models.PositiveIntegerField = models.PositiveIntegerField(
+        blank=False, null=False, default=2025
+    )
+
+    budget_month: models.PositiveIntegerField = models.PositiveIntegerField(
+        blank=False, null=False, default=1
+    )
+
+    def clean(self) -> None:
+        super().clean()
+        if self.budget_month < 1 or self.budget_month > 12:
+            raise ValidationError({"budget_month": "Month must be between 1 and 12."})
+
+    @override
+    def __str__(self) -> str:
+        return f"Budget: {self.category} - ${self.amount_dollars:.2f} ({self.type}) - {self.budget_year}/{self.budget_month:02d}"
 
     class Meta:
-        db_table = 'finance_budget'
-        ordering = ['-month']
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'month'], name='unique_user_month_budget')
-        ]
-
-    def __str__(self):
-        return f"Budget for {self.month.strftime('%B %Y')} - {self.user.username}"
+        ordering = ["-budget_year", "-budget_month", "-date_created"]
+        unique_together = [["user", "category", "type", "budget_year", "budget_month"]]

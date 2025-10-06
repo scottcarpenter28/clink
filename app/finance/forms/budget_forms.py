@@ -1,210 +1,133 @@
-from django import forms
-from django.forms import formset_factory, ModelForm, BaseFormSet
-from django.core.exceptions import ValidationError
+from typing import TypedDict, Any, Dict
 from decimal import Decimal
 
-from finance.models import Budget, BudgetAllocation, Category
-from finance.utilities.budget_utils import validate_zero_based_allocation, get_expense_categories
+from django import forms
+from django.contrib.auth.models import User
+from django.forms import formset_factory
+
+from finance.models import Budget
+from finance.enums import TransactionType
 
 
-class BudgetSetupForm(ModelForm):
-    """Form for creating a budget."""
+class BudgetItemData(TypedDict):
+    type: str
+    category: str
+    amount: float | Decimal
 
-    # Override the month field with explicit configuration
-    month = forms.DateField(
-        input_formats=['%Y-%m-%d'],
-        widget=forms.DateInput(attrs={
-            'class': 'form-control',
-            'type': 'date'
-        }, format='%Y-%m-%d')
+
+class FormsetData(TypedDict):
+    pass
+
+
+class CleanedFormData(TypedDict):
+    type: str
+    category: str
+    amount: Decimal
+    DELETE: bool
+
+
+class BudgetItemForm(forms.Form):
+    type = forms.ChoiceField(
+        choices=[(t.name, t.value) for t in TransactionType], required=True
     )
+    category = forms.CharField(max_length=100, required=True)
+    amount = forms.DecimalField(decimal_places=2, required=True)
 
-    class Meta:
-        model = Budget
-        fields = ['month', 'total_income']
-        widgets = {
-            'total_income': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'step': '0.01',
-                'min': '0'
-            })
-        }
+    def clean_amount(self) -> Decimal:
+        amount = self.cleaned_data.get("amount")
+        if amount is not None and amount <= 0:
+            raise forms.ValidationError("Amount must be positive.")
+        return amount
 
-    def __init__(self, user=None, *args, **kwargs):
-        self.user = user
-        super().__init__(*args, **kwargs)
-
-        # Add labels
-        self.fields['total_income'].label = "Total Income ($)"
-        self.fields['month'].label = "Budget Month"
-
-        # If we're editing an existing budget, make month read-only
-        if self.instance and self.instance.pk:
-            self.fields['month'].widget.attrs['readonly'] = True
+    def clean_type(self) -> str:
+        type_value = self.cleaned_data.get("type")
+        valid_types = [t.name for t in TransactionType]
+        if type_value not in valid_types:
+            raise forms.ValidationError("Invalid transaction type.")
+        return type_value
 
 
-
-
-    def save(self, commit=True):
-        """Save the budget and associate it with the user."""
-        budget = super().save(commit=False)
-        if self.user:
-            budget.user = self.user
-
-        if commit:
-            budget.save()
-
-        return budget
-
-
-class BudgetAllocationForm(forms.Form):
-    """Form for a single budget allocation."""
-
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(category_type='expense'),
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-    allocated_amount = forms.DecimalField(
-        min_value=0,
-        decimal_places=2,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control allocation-input',
-            'step': '0.01',
-            'min': '0'
-        })
-    )
-
-    # Read-only fields for display purposes
-    spent_amount = forms.DecimalField(
-        required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control-plaintext',
-            'readonly': 'readonly'
-        })
-    )
-
-    remaining_amount = forms.DecimalField(
-        required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control-plaintext',
-            'readonly': 'readonly'
-        })
-    )
-
-    rollover_from_previous = forms.DecimalField(
-        required=False,
-        initial=0,
-        decimal_places=2,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control-plaintext',
-            'readonly': 'readonly'
-        })
-    )
-
-    # Hidden field for existing allocation UID
-    allocation_uid = forms.UUIDField(required=False, widget=forms.HiddenInput())
-
-    def __init__(self, user=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # If user is provided, filter categories to ones they've used
-        if user:
-            self.fields['category'].queryset = get_expense_categories(user)
-
-
-class BaseBudgetAllocationFormSet(BaseFormSet):
-    """Base formset for budget allocations with zero-based validation."""
-
-    def __init__(self, budget=None, *args, **kwargs):
-        self.budget = budget
-        self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-
-    def get_form_kwargs(self, index):
-        kwargs = super().get_form_kwargs(index)
-        kwargs['user'] = self.user
-        return kwargs
-
-    def clean(self):
-        """Validate that allocations sum to total income."""
-        if any(self.errors):
-            return
-
-        if not self.budget:
-            return
-
-        # Collect all allocation amounts
-        allocations = {}
-        categories = []
-
-        for form in self.forms:
-            if 'category' not in form.cleaned_data or 'allocated_amount' not in form.cleaned_data:
-                continue
-
-            category = form.cleaned_data['category']
-            amount = form.cleaned_data['allocated_amount']
-
-            # Check for duplicate categories
-            if category in categories:
-                raise ValidationError(f"Category '{category}' appears more than once.")
-
-            categories.append(category)
-            allocations[category.id] = Decimal(str(amount))
-
-        # Validate zero-based budget
-        if not validate_zero_based_allocation(allocations, self.budget.total_income):
-            total = sum(allocations.values())
-            diff = self.budget.total_income - total
-
-            if diff > 0:
-                message = f"You still have ${diff:.2f} unallocated."
-            else:
-                message = f"You've over-allocated by ${abs(diff):.2f}."
-
-            raise ValidationError(message)
-
-
-# Create the formset
-BudgetAllocationFormSet = formset_factory(
-    BudgetAllocationForm,
-    formset=BaseBudgetAllocationFormSet,
-    extra=0,
-    can_delete=True
+BudgetItemFormSet = formset_factory(
+    BudgetItemForm, extra=0, min_num=1, validate_min=True
 )
 
 
-class BudgetFilterForm(forms.Form):
-    """Form for filtering the budget dashboard by month."""
+class MultiBudgetForm(forms.Form):
+    year = forms.IntegerField(min_value=1900, required=True)
+    month = forms.IntegerField(min_value=1, max_value=12, required=True)
 
-    year = forms.ChoiceField(
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-    month = forms.ChoiceField(
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self.formset = None
+        if "data" in kwargs or (args and args[0] is not None):
+            data = kwargs.get("data") or args[0]
+            if data and "budgets" in data:
+                formset_data = self._prepare_formset_data(data["budgets"])
+                self.formset = BudgetItemFormSet(formset_data)
+            else:
+                self.formset = BudgetItemFormSet()
 
-        # Get years with budgets for this user
-        from django.db.models import DateField
-        from django.db.models.functions import ExtractYear
-        from finance.models import Budget
+    def _prepare_formset_data(
+        self, budgets_list: list[BudgetItemData]
+    ) -> Dict[str, str]:
+        formset_data = {
+            "form-TOTAL_FORMS": str(len(budgets_list)),
+            "form-INITIAL_FORMS": "0",
+            "form-MIN_NUM_FORMS": "1",
+            "form-MAX_NUM_FORMS": "1000",
+        }
+        for idx, budget in enumerate(budgets_list):
+            formset_data[f"form-{idx}-type"] = budget.get("type", "")
+            formset_data[f"form-{idx}-category"] = budget.get("category", "")
+            formset_data[f"form-{idx}-amount"] = str(budget.get("amount", ""))
+        return formset_data
 
-        years = Budget.objects.filter(user=user)\
-            .annotate(year=ExtractYear('month'))\
-            .values_list('year', flat=True)\
-            .distinct().order_by('-year')
+    def is_valid(self) -> bool:
+        form_valid = super().is_valid()
+        formset_valid = self.formset.is_valid() if self.formset else False
+        return form_valid and formset_valid
 
-        # Format year choices
-        year_choices = [('', 'All Years')] + [(str(int(y)), str(int(y))) for y in years]
-        self.fields['year'].choices = year_choices
+    def clean(self) -> Dict[str, Any]:
+        cleaned_data = super().clean()
 
-        # Month choices
-        from finance.utilities.constants import MONTH_NAMES
-        month_choices = [('', 'All Months')] + [(str(k), v) for k, v in MONTH_NAMES.items()]
-        self.fields['month'].choices = month_choices
+        if self.formset and self.formset.is_valid():
+            categories_types: set[tuple[str, str]] = set()
+            for form in self.formset:
+                if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
+                    category = form.cleaned_data.get("category")
+                    type_value = form.cleaned_data.get("type")
+                    combo = (category, type_value)
+                    if combo in categories_types:
+                        raise forms.ValidationError(
+                            f"Duplicate entry found: {category} ({type_value}). "
+                            "Each category-type combination must be unique."
+                        )
+                    categories_types.add(combo)
+
+        return cleaned_data
+
+    def save(self, user: User) -> list[Budget]:
+        if not self.is_valid():
+            raise ValueError("Cannot save invalid form")
+
+        year: int = self.cleaned_data["year"]
+        month: int = self.cleaned_data["month"]
+        created_budgets: list[Budget] = []
+
+        for form in self.formset:
+            if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
+                type_value: str = form.cleaned_data["type"]
+                category: str = form.cleaned_data["category"]
+                amount_dollars: Decimal = form.cleaned_data["amount"]
+
+                budget, created = Budget.objects.update_or_create(
+                    user=user,
+                    category=category,
+                    type=type_value,
+                    budget_year=year,
+                    budget_month=month,
+                    defaults={"amount_in_cents": int(float(amount_dollars) * 100)},
+                )
+                created_budgets.append(budget)
+
+        return created_budgets
