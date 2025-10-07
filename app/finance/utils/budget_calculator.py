@@ -74,30 +74,28 @@ def group_budgets_with_actuals(
     return budget_groups
 
 
-def calculate_unallocated_income(
-    transactions: QuerySet[Transaction], budgets: QuerySet[Budget]
-) -> dict:
-    from finance.utils.transaction_calculator import calculate_total_income
-
-    total_income = calculate_total_income(transactions)
-
-    budget_types_to_exclude = [TransactionType.INCOME.name]
-    total_allocated = budgets.exclude(type__in=budget_types_to_exclude).aggregate(
+def calculate_unallocated_income(budgets: QuerySet[Budget]) -> dict:
+    total_income_cents = budgets.filter(type=TransactionType.INCOME.name).aggregate(
         total=Sum("amount_in_cents")
     )["total"]
 
-    total_allocated_dollars = Decimal(total_allocated or 0) / 100
-    unallocated = total_income - total_allocated_dollars
+    total_income = Decimal(total_income_cents or 0) / 100
+
+    budget_types_to_exclude = [TransactionType.INCOME.name]
+    total_allocated_cents = budgets.exclude(type__in=budget_types_to_exclude).aggregate(
+        total=Sum("amount_in_cents")
+    )["total"]
+
+    total_allocated = Decimal(total_allocated_cents or 0) / 100
+    unallocated = total_income - total_allocated
 
     percent_allocated = (
-        float((total_allocated_dollars / total_income * 100))
-        if total_income > 0
-        else 0.0
+        float((total_allocated / total_income * 100)) if total_income > 0 else 0.0
     )
 
     return {
         "total_income": total_income,
-        "total_allocated": total_allocated_dollars,
+        "total_allocated": total_allocated,
         "unallocated": unallocated,
         "percent_allocated": percent_allocated,
     }

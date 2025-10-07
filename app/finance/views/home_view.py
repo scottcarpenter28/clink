@@ -63,7 +63,7 @@ def build_home_context(user, year: int, month: int) -> dict:
         for budget_type, items in budget_data.items()
     }
 
-    unallocated_income_data = calculate_unallocated_income(transactions, budgets)
+    unallocated_income_data = calculate_unallocated_income(budgets)
     budget_distribution_data = calculate_budget_distribution(budgets)
 
     return {
