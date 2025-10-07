@@ -72,3 +72,56 @@ def group_budgets_with_actuals(
         )
 
     return budget_groups
+
+
+def calculate_unallocated_income(
+    transactions: QuerySet[Transaction], budgets: QuerySet[Budget]
+) -> dict:
+    from finance.utils.transaction_calculator import calculate_total_income
+
+    total_income = calculate_total_income(transactions)
+
+    budget_types_to_exclude = [TransactionType.INCOME.name]
+    total_allocated = budgets.exclude(type__in=budget_types_to_exclude).aggregate(
+        total=Sum("amount_in_cents")
+    )["total"]
+
+    total_allocated_dollars = Decimal(total_allocated or 0) / 100
+    unallocated = total_income - total_allocated_dollars
+
+    percent_allocated = (
+        float((total_allocated_dollars / total_income * 100))
+        if total_income > 0
+        else 0.0
+    )
+
+    return {
+        "total_income": total_income,
+        "total_allocated": total_allocated_dollars,
+        "unallocated": unallocated,
+        "percent_allocated": percent_allocated,
+    }
+
+
+def calculate_budget_distribution(budgets: QuerySet[Budget]) -> dict:
+    distribution = {}
+
+    budget_types = [
+        TransactionType.NEED,
+        TransactionType.WANT,
+        TransactionType.DEBTS,
+        TransactionType.SAVINGS,
+        TransactionType.INVESTING,
+    ]
+
+    for budget_type in budget_types:
+        total = budgets.filter(type=budget_type.name).aggregate(
+            total=Sum("amount_in_cents")
+        )["total"]
+
+        total_dollars = Decimal(total or 0) / 100
+
+        if total_dollars > 0:
+            distribution[budget_type.value] = total_dollars
+
+    return distribution

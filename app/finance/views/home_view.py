@@ -15,6 +15,8 @@ from finance.utils.transaction_calculator import (
 from finance.utils.budget_calculator import (
     group_budgets_with_actuals,
     calculate_totals_for_budget_items,
+    calculate_unallocated_income,
+    calculate_budget_distribution,
 )
 
 
@@ -61,6 +63,9 @@ def build_home_context(user, year: int, month: int) -> dict:
         for budget_type, items in budget_data.items()
     }
 
+    unallocated_income_data = calculate_unallocated_income(transactions, budgets)
+    budget_distribution_data = calculate_budget_distribution(budgets)
+
     return {
         "year": year,
         "month": month,
@@ -75,6 +80,8 @@ def build_home_context(user, year: int, month: int) -> dict:
         "budget_data": budget_data,
         "budget_totals": budget_totals,
         "transactions": transactions,
+        "unallocated_income_data": unallocated_income_data,
+        "budget_distribution_data": budget_distribution_data,
     }
 
 
