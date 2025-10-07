@@ -4,7 +4,7 @@
 {% block title %}Dashboard - {{ year }}/{{ month|stringformat:"02d" }}{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/src/dashboard.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -47,6 +47,24 @@
     <div class="container-fluid">
         {% include 'partials/monthly_summary_cards.html' %}
 
+        <div class="charts-section mb-4">
+            <h2 class="section-title">Budget Overview</h2>
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Income Allocation</h3>
+                        <canvas id="unallocatedIncomeChart" aria-label="Unallocated income vs allocated income chart"></canvas>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Budget Distribution</h3>
+                        <canvas id="budgetDistributionChart" aria-label="Budget distribution by category pie chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="budget-section mb-4">
             <h2 class="section-title">Budget Tracking</h2>
             {% include 'partials/budget_tabs.html' %}
@@ -63,5 +81,22 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    <script src="{% static 'js/dashboard.js' %}"></script>
+    <script src="{% static 'js/lib/chart.js' %}"></script>
+    <script id="chart-data" type="application/json">
+{
+    "unallocatedIncome": {
+        "totalIncome": "{{ unallocated_income_data.total_income }}",
+        "totalAllocated": "{{ unallocated_income_data.total_allocated }}",
+        "unallocated": "{{ unallocated_income_data.unallocated }}",
+        "percentAllocated": {{ unallocated_income_data.percent_allocated }}
+    },
+    "budgetDistribution": {
+        {% for type, amount in budget_distribution_data.items %}
+        "{{ type }}": "{{ amount }}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    }
+}
+    </script>
+    <script src="{% static 'js/src/charts.js' %}"></script>
+    <script src="{% static 'js/src/dashboard.js' %}"></script>
 {% endblock %}
