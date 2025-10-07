@@ -45,7 +45,7 @@ class HomeViewTests(TestCase):
     def test_home_view_displays_monthly_totals(self):
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -54,7 +54,7 @@ class HomeViewTests(TestCase):
 
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
@@ -62,7 +62,7 @@ class HomeViewTests(TestCase):
 
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Groceries",
             amount_in_cents=10000,
             date_of_expense="2025-10-02",
@@ -83,7 +83,7 @@ class HomeViewTests(TestCase):
 
         Budget.objects.create(
             user=other_user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=100000,
             budget_year=2025,
@@ -92,7 +92,7 @@ class HomeViewTests(TestCase):
 
         Transaction.objects.create(
             user=other_user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=100000,
             date_of_expense="2025-10-01",
@@ -110,7 +110,7 @@ class HomeViewTests(TestCase):
     def test_home_view_groups_budgets_by_type(self):
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -119,7 +119,7 @@ class HomeViewTests(TestCase):
 
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Rent",
             amount_in_cents=150000,
             budget_year=2025,
@@ -138,7 +138,7 @@ class HomeViewTests(TestCase):
     def test_future_transactions_not_shown_in_current_month(self):
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Groceries",
             amount_in_cents=10000,
             date_of_expense="2025-10-15",
@@ -146,7 +146,7 @@ class HomeViewTests(TestCase):
 
         Transaction.objects.create(
             user=self.user,
-            type=TransactionType.WANT.value,
+            type=TransactionType.WANT.name,
             category="Entertainment",
             amount_in_cents=5000,
             date_of_expense="2025-11-20",

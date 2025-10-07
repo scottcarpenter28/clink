@@ -60,7 +60,7 @@ class BudgetCRUDTests(TestCase):
     def test_create_budget_updates_existing_budget(self):
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=400000,
             budget_year=2025,
@@ -84,7 +84,7 @@ class BudgetCRUDTests(TestCase):
         budget = Budget.objects.get(
             user=self.user,
             category="Salary",
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             budget_year=2025,
             budget_month=10,
         )
@@ -93,7 +93,7 @@ class BudgetCRUDTests(TestCase):
     def test_update_budget_requires_authentication(self):
         budget = Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -109,7 +109,7 @@ class BudgetCRUDTests(TestCase):
     def test_update_budget_successfully(self):
         budget = Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -140,7 +140,7 @@ class BudgetCRUDTests(TestCase):
         )
         budget = Budget.objects.create(
             user=other_user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -161,7 +161,7 @@ class BudgetCRUDTests(TestCase):
     def test_delete_budget_requires_authentication(self):
         budget = Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -177,7 +177,7 @@ class BudgetCRUDTests(TestCase):
     def test_delete_budget_successfully(self):
         budget = Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -200,7 +200,7 @@ class BudgetCRUDTests(TestCase):
         )
         budget = Budget.objects.create(
             user=other_user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -236,7 +236,7 @@ class BudgetCategoriesTests(TestCase):
     def test_get_budget_categories_returns_categories_for_type(self):
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -244,7 +244,7 @@ class BudgetCategoriesTests(TestCase):
         )
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Freelance",
             amount_in_cents=200000,
             budget_year=2025,
@@ -252,7 +252,7 @@ class BudgetCategoriesTests(TestCase):
         )
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Rent",
             amount_in_cents=150000,
             budget_year=2025,
@@ -277,7 +277,7 @@ class BudgetCategoriesTests(TestCase):
     def test_get_budget_categories_returns_distinct_categories(self):
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.NEED.value,
+            type=TransactionType.NEED.name,
             category="Groceries",
             amount_in_cents=50000,
             budget_year=2025,
@@ -313,7 +313,7 @@ class BudgetCategoriesTests(TestCase):
     def test_get_budget_categories_filters_by_year_and_month(self):
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.SAVINGS.value,
+            type=TransactionType.SAVINGS.name,
             category="Emergency Fund",
             amount_in_cents=100000,
             budget_year=2025,
@@ -321,7 +321,7 @@ class BudgetCategoriesTests(TestCase):
         )
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.SAVINGS.value,
+            type=TransactionType.SAVINGS.name,
             category="Vacation",
             amount_in_cents=50000,
             budget_year=2025,
@@ -360,7 +360,7 @@ class BudgetCategoriesTests(TestCase):
         )
         Budget.objects.create(
             user=other_user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Other Salary",
             amount_in_cents=500000,
             budget_year=2025,
@@ -368,7 +368,7 @@ class BudgetCategoriesTests(TestCase):
         )
         Budget.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="My Salary",
             amount_in_cents=500000,
             budget_year=2025,

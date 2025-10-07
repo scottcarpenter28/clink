@@ -55,7 +55,7 @@ class TransactionCRUDTests(TestCase):
         self.assertFalse(response_data["success"])
         self.assertIn("errors", response_data)
 
-    def test_create_transaction_rejects_future_date(self):
+    def test_create_transaction_accepts_future_date(self):
         data = {
             "type": TransactionType.INCOME.name,
             "category": "Salary",
@@ -64,15 +64,16 @@ class TransactionCRUDTests(TestCase):
         }
 
         response = self.client.post(reverse("create_transaction"), data)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)
-        self.assertFalse(response_data["success"])
+        self.assertTrue(response_data["success"])
+        self.assertIn("transaction_id", response_data)
 
     def test_update_transaction_requires_authentication(self):
         transaction = Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
@@ -87,7 +88,7 @@ class TransactionCRUDTests(TestCase):
     def test_update_transaction_successfully(self):
         transaction = Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
@@ -120,7 +121,7 @@ class TransactionCRUDTests(TestCase):
         )
         transaction = Transaction.objects.create(
             user=other_user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
@@ -142,7 +143,7 @@ class TransactionCRUDTests(TestCase):
     def test_delete_transaction_requires_authentication(self):
         transaction = Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
@@ -157,7 +158,7 @@ class TransactionCRUDTests(TestCase):
     def test_delete_transaction_successfully(self):
         transaction = Transaction.objects.create(
             user=self.user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
@@ -179,7 +180,7 @@ class TransactionCRUDTests(TestCase):
         )
         transaction = Transaction.objects.create(
             user=other_user,
-            type=TransactionType.INCOME.value,
+            type=TransactionType.INCOME.name,
             category="Salary",
             amount_in_cents=500000,
             date_of_expense="2025-10-01",
