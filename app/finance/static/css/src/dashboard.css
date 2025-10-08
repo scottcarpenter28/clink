@@ -188,6 +188,33 @@
     max-height: 250px;
     width: 100% !important;
     height: 250px !important;
+    display: block;
+}
+
+.chart-mobile-alternative {
+    display: none;
+}
+
+.mobile-chart-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.mobile-chart-item:last-child {
+    border-bottom: none;
+}
+
+.mobile-chart-label {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.mobile-chart-value {
+    font-weight: 600;
+    color: #333;
+    font-family: "Courier New", monospace;
 }
 
 .budget-section {
@@ -461,5 +488,13 @@
     .budget-tabs .nav-link {
         padding: 0.5rem 0.75rem;
         font-size: 0.875rem;
+    }
+
+    .chart-container canvas {
+        display: none !important;
+    }
+
+    .chart-mobile-alternative {
+        display: block !important;
     }
 }

@@ -53,13 +53,59 @@
                 <div class="col-12 col-md-6">
                     <div class="chart-container">
                         <h3 class="chart-title">Income Allocation</h3>
-                        <canvas id="unallocatedIncomeChart" aria-label="Unallocated income vs allocated income chart"></canvas>
+                        <canvas id="unallocatedIncomeChart" role="img" aria-label="Doughnut chart showing allocated income versus unallocated income as percentages of total budgeted income"></canvas>
+                        <div class="visually-hidden" aria-live="polite">
+                            Income allocation summary: Total income is ${{ unallocated_income_data.total_income|floatformat:2 }}. 
+                            Allocated amount is ${{ unallocated_income_data.total_allocated|floatformat:2 }} 
+                            which is {{ unallocated_income_data.percent_allocated|floatformat:1 }} percent. 
+                            Unallocated amount is ${{ unallocated_income_data.unallocated|floatformat:2 }}.
+                        </div>
+                        <div class="chart-mobile-alternative">
+                            <div class="mobile-chart-item">
+                                <span class="mobile-chart-label">Total Income:</span>
+                                <span class="mobile-chart-value">${{ unallocated_income_data.total_income|floatformat:2 }}</span>
+                            </div>
+                            <div class="mobile-chart-item">
+                                <span class="mobile-chart-label">Allocated:</span>
+                                <span class="mobile-chart-value">${{ unallocated_income_data.total_allocated|floatformat:2 }}</span>
+                            </div>
+                            <div class="mobile-chart-item">
+                                <span class="mobile-chart-label">Unallocated:</span>
+                                <span class="mobile-chart-value">${{ unallocated_income_data.unallocated|floatformat:2 }}</span>
+                            </div>
+                            <div class="mobile-chart-item">
+                                <span class="mobile-chart-label">Percent Allocated:</span>
+                                <span class="mobile-chart-value">{{ unallocated_income_data.percent_allocated|floatformat:1 }}%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="chart-container">
                         <h3 class="chart-title">Budget Distribution</h3>
-                        <canvas id="budgetDistributionChart" aria-label="Budget distribution by category pie chart"></canvas>
+                        <canvas id="budgetDistributionChart" role="img" aria-label="Pie chart displaying budget allocation across five categories: Needs, Wants, Debts, Savings, and Investing"></canvas>
+                        <div class="visually-hidden" aria-live="polite">
+                            Budget distribution summary: 
+                            {% if budget_distribution_data %}
+                                {% for type, amount in budget_distribution_data.items %}
+                                    {{ type }} is ${{ amount|floatformat:2 }}{% if not forloop.last %}, {% else %}.{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                No budgets have been allocated yet.
+                            {% endif %}
+                        </div>
+                        <div class="chart-mobile-alternative">
+                            {% if budget_distribution_data %}
+                                {% for type, amount in budget_distribution_data.items %}
+                                <div class="mobile-chart-item">
+                                    <span class="mobile-chart-label">{{ type }}:</span>
+                                    <span class="mobile-chart-value">${{ amount|floatformat:2 }}</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted text-center mb-0">No budgets allocated yet</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

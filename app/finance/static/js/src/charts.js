@@ -8,8 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const unallocatedData = chartData.unallocatedIncome;
   const distributionData = chartData.budgetDistribution;
 
-  initializeUnallocatedIncomeChart(unallocatedData);
-  initializeBudgetDistributionChart(distributionData);
+  function initializeCharts() {
+    if (window.innerWidth >= 768) {
+      initializeUnallocatedIncomeChart(unallocatedData);
+      initializeBudgetDistributionChart(distributionData);
+    }
+  }
+
+  initializeCharts();
+
+  window.addEventListener("resize", function () {
+    initializeCharts();
+  });
 });
 
 function initializeUnallocatedIncomeChart(data) {
@@ -32,7 +42,7 @@ function initializeUnallocatedIncomeChart(data) {
       datasets: [
         {
           data: [allocatedAmount, unallocatedAmount],
-          backgroundColor: ["#28a745", "#e9ecef"],
+          backgroundColor: ["#96A78D", "#e9ecef"],
           borderWidth: 2,
           borderColor: "#fff",
         },
@@ -91,11 +101,11 @@ function initializeBudgetDistributionChart(data) {
   }
 
   const colorMap = {
-    Need: "#ff6b6b",
-    Want: "#a29bfe",
-    Debts: "#8b4513",
-    Savings: "#4dabf7",
-    Investing: "#51cf66",
+    Need: "#FFC7A7",
+    Want: "#F08787",
+    Debts: "#F8FAB4",
+    Savings: "#96A78D",
+    Investing: "#B6CEB4",
   };
 
   const backgroundColors = labels.map((label) => colorMap[label] || "#6c757d");
