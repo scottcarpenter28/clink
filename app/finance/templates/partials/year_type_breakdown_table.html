@@ -1,0 +1,168 @@
+<div class="year-breakdown-section">
+    <h2 class="section-title">Type Breakdown</h2>
+    <div class="table-wrapper">
+        <div class="table-responsive">
+            <table class="table year-table">
+                <thead>
+                    <tr>
+                        <th class="sticky-col">Type</th>
+                        <th class="text-end">Jan</th>
+                        <th class="text-end">Feb</th>
+                        <th class="text-end">Mar</th>
+                        <th class="text-end">Apr</th>
+                        <th class="text-end">May</th>
+                        <th class="text-end">Jun</th>
+                        <th class="text-end">Jul</th>
+                        <th class="text-end">Aug</th>
+                        <th class="text-end">Sep</th>
+                        <th class="text-end">Oct</th>
+                        <th class="text-end">Nov</th>
+                        <th class="text-end">Dec</th>
+                        <th class="text-end total-col">Total</th>
+                        <th class="text-end average-col">Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="type-row type-income">
+                        <td class="sticky-col type-label">Income</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Income.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Income.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Income.13|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="type-row type-need">
+                        <td class="sticky-col type-label">Needs</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Need.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Need.13|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="type-row type-want">
+                        <td class="sticky-col type-label">Wants</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Want.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Want.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Want.13|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="type-row type-debts">
+                        <td class="sticky-col type-label">Debts</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Debts.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Debts.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Debts.13|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="type-row type-savings">
+                        <td class="sticky-col type-label">Savings</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Savings.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Savings.13|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="type-row type-investing">
+                        <td class="sticky-col type-label">Investing</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Investing.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Investing.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Investing.13|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="footer-row expenses-row">
+                        <td class="sticky-col footer-label">Total Expenses</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.0|add:type_breakdown.Want.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.1|add:type_breakdown.Want.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.2|add:type_breakdown.Want.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.3|add:type_breakdown.Want.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.4|add:type_breakdown.Want.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.5|add:type_breakdown.Want.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.6|add:type_breakdown.Want.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.7|add:type_breakdown.Want.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.8|add:type_breakdown.Want.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.9|add:type_breakdown.Want.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.10|add:type_breakdown.Want.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Need.11|add:type_breakdown.Want.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Need.12|add:type_breakdown.Want.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Need.13|add:type_breakdown.Want.13|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="footer-row saved-row">
+                        <td class="sticky-col footer-label">Total Saved/Invested</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.0|add:type_breakdown.Investing.0|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.1|add:type_breakdown.Investing.1|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.2|add:type_breakdown.Investing.2|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.3|add:type_breakdown.Investing.3|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.4|add:type_breakdown.Investing.4|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.5|add:type_breakdown.Investing.5|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.6|add:type_breakdown.Investing.6|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.7|add:type_breakdown.Investing.7|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.8|add:type_breakdown.Investing.8|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.9|add:type_breakdown.Investing.9|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.10|add:type_breakdown.Investing.10|floatformat:2 }}</td>
+                        <td class="text-end amount">${{ type_breakdown.Savings.11|add:type_breakdown.Investing.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col">${{ type_breakdown.Savings.12|add:type_breakdown.Investing.12|floatformat:2 }}</td>
+                        <td class="text-end amount average-col">${{ type_breakdown.Savings.13|add:type_breakdown.Investing.13|floatformat:2 }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

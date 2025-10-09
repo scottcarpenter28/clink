@@ -1,0 +1,257 @@
+.year-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+.btn-year-nav {
+    color: white;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.btn-year-nav:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.current-year {
+    color: white;
+    font-weight: 500;
+    min-width: 180px;
+    text-align: center;
+}
+
+.btn-dashboard {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-dashboard:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.year-review-container {
+    padding: 0 1rem 2rem;
+}
+
+.year-breakdown-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    margin: 0 -1.5rem;
+    padding: 0 1.5rem;
+}
+
+.table-responsive {
+    min-width: 100%;
+    overflow-x: auto;
+}
+
+.year-table {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.year-table thead {
+    background-color: var(--color-fourth);
+}
+
+.year-table th {
+    font-weight: 600;
+    color: #495057;
+    border: none;
+    padding: 0.75rem;
+    min-width: 100px;
+}
+
+.year-table th.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background-color: var(--color-fourth);
+    min-width: 140px;
+}
+
+.year-table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    min-width: 100px;
+}
+
+.year-table td.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: white;
+    font-weight: 600;
+}
+
+.year-table tbody tr:hover td {
+    background-color: #f8f9fa;
+}
+
+.year-table tbody tr:hover td.sticky-col {
+    background-color: #f8f9fa;
+}
+
+.type-label {
+    color: #333;
+    font-size: 1rem;
+}
+
+.type-row.type-income {
+    border-left: 4px solid #28a745;
+}
+
+.type-row.type-need {
+    border-left: 4px solid #ffc107;
+}
+
+.type-row.type-want {
+    border-left: 4px solid #17a2b8;
+}
+
+.type-row.type-debts {
+    border-left: 4px solid #dc3545;
+}
+
+.type-row.type-savings {
+    border-left: 4px solid #17a2b8;
+}
+
+.type-row.type-investing {
+    border-left: 4px solid #6c757d;
+}
+
+.year-table tfoot {
+    border-top: 2px solid var(--color-secondary);
+}
+
+.footer-row td {
+    font-weight: 600;
+    padding: 1rem 0.75rem;
+    background-color: var(--color-fourth);
+}
+
+.footer-row td.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: var(--color-fourth);
+}
+
+.footer-label {
+    color: #333;
+    font-size: 0.938rem;
+}
+
+.expenses-row {
+    border-left: 4px solid #fd7e14;
+}
+
+.saved-row {
+    border-left: 4px solid #20c997;
+}
+
+.total-col {
+    font-weight: 700;
+    background-color: #f1f3f5;
+}
+
+.average-col {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.amount {
+    font-family: "Courier New", monospace;
+    font-weight: 600;
+}
+
+.empty-state-year {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #6c757d;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state-year svg {
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.empty-state-year h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-year p {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .nav-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .year-nav {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .year-breakdown-section {
+        padding: 1rem;
+    }
+
+    .table-wrapper {
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+
+    .year-table th,
+    .year-table td {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        min-width: 80px;
+    }
+
+    .year-table th.sticky-col,
+    .year-table td.sticky-col {
+        min-width: 100px;
+    }
+}

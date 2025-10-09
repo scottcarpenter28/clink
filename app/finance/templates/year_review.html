@@ -1,5 +1,57 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Year Review - {{ year }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/src/year_review.css' %}">
+{% endblock %}
+
+{% block header %}
+{% include 'partials/navigation_header.html' %}
+{% block nav_primary %}
+<div class="year-nav">
+    <a href="{% url 'year_review_with_year' year=prev_year %}" class="btn-year-nav">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+    </a>
+    <span class="current-year">{{ year }} Year Review</span>
+    <a href="{% url 'year_review_with_year' year=next_year %}" class="btn-year-nav">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </a>
+</div>
+<a href="{% url 'home' %}" class="btn-dashboard">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+    </svg>
+    Dashboard
+</a>
+{% endblock %}
+{% endblock %}
 
 {% block content %}
-<h1>Year Review - {{ year }}</h1>
+<div class="year-review-container">
+    <div class="container-fluid">
+        {% if has_data %}
+            {% include 'partials/year_type_breakdown_table.html' %}
+        {% else %}
+            <div class="empty-state-year">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                </svg>
+                <h2>No Data for {{ year }}</h2>
+                <p>There are no budgets or transactions recorded for this year.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/src/year_review.js' %}"></script>
 {% endblock %}
