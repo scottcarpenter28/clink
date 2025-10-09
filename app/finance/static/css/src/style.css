@@ -1,11 +1,126 @@
 :root {
-    --color-primary: #FAF9EE;
-    --color-secondary: #A2AF9B;
-    --color-tertiary: #DCCFC0;
-    --color-fourth: #EEEEEE;
+    --color-primary: #faf9ee;
+    --color-secondary: #a2af9b;
+    --color-tertiary: #dccfc0;
+    --color-fourth: #eeeeee;
 }
 
 body {
     background-color: var(--color-primary);
     color: #333;
+}
+
+.dashboard-nav {
+    background-color: var(--color-secondary);
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.app-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-primary-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-nav-link {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-admin {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-admin:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-logout {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .nav-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .nav-primary-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-nav-link,
+    .btn-admin,
+    .btn-logout {
+        flex: 1 1 auto;
+        justify-content: center;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
 }
