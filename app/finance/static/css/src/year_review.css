@@ -48,6 +48,14 @@
     margin-bottom: 2rem;
 }
 
+.category-breakdown-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
 .table-wrapper {
     overflow-x: auto;
     margin: 0 -1.5rem;
@@ -112,27 +120,52 @@
 }
 
 .type-row.type-income {
-    border-left: 4px solid #28a745;
+    border-left: 4px solid #96a78d;
 }
 
 .type-row.type-need {
-    border-left: 4px solid #ffc107;
+    border-left: 4px solid #ffc7a7;
 }
 
 .type-row.type-want {
-    border-left: 4px solid #17a2b8;
+    border-left: 4px solid #f08787;
 }
 
 .type-row.type-debts {
-    border-left: 4px solid #dc3545;
+    border-left: 4px solid #f8fab4;
 }
 
 .type-row.type-savings {
-    border-left: 4px solid #17a2b8;
+    border-left: 4px solid #96a78d;
 }
 
 .type-row.type-investing {
-    border-left: 4px solid #6c757d;
+    border-left: 4px solid #b6ceb4;
+}
+
+.category-row.type-need {
+    border-left: 4px solid #ffc7a7;
+}
+
+.category-row.type-want {
+    border-left: 4px solid #f08787;
+}
+
+.category-row.type-debts {
+    border-left: 4px solid #f8fab4;
+}
+
+.category-row.type-savings {
+    border-left: 4px solid #96a78d;
+}
+
+.category-row.type-investing {
+    border-left: 4px solid #b6ceb4;
+}
+
+.category-label {
+    color: #333;
+    font-size: 0.938rem;
 }
 
 .year-table tfoot {
@@ -158,11 +191,11 @@
 }
 
 .expenses-row {
-    border-left: 4px solid #fd7e14;
+    border-left: 4px solid #f8fab4;
 }
 
 .saved-row {
-    border-left: 4px solid #20c997;
+    border-left: 4px solid #96a78d;
 }
 
 .total-col {
@@ -204,6 +237,15 @@
 .empty-state-year p {
     margin-bottom: 1.5rem;
     font-size: 1rem;
+}
+
+.empty-category-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    font-style: italic;
 }
 
 @media (max-width: 768px) {

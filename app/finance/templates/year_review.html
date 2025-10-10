@@ -28,6 +28,26 @@
 
         {% if has_data %}
             {% include 'partials/year_type_breakdown_table.html' %}
+
+            {% with categories=category_breakdowns.Need title="Needs Details" type_class="type-need" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Want title="Wants Details" type_class="type-want" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Debts title="Debts Details" type_class="type-debts" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Savings title="Savings Details" type_class="type-savings" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Investing title="Investing Details" type_class="type-investing" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
         {% else %}
             <div class="empty-state-year">
                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
