@@ -35,6 +35,35 @@ function initializeUnallocatedIncomeChart(data) {
   const allocatedAmount = Math.min(totalAllocated, totalIncome);
   const unallocatedAmount = Math.max(0, unallocated);
 
+  const centerTextPlugin = {
+    id: "centerText",
+    afterDatasetsDraw(chart) {
+      const { ctx, chartArea } = chart;
+      const centerX = (chartArea.left + chartArea.right) / 2;
+      const centerY = (chartArea.top + chartArea.bottom) / 2;
+
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.font = "bold 14px sans-serif";
+      ctx.fillStyle = "#6c757d";
+      ctx.fillText("Unallocated", centerX, centerY - 15);
+
+      ctx.font = "bold 24px sans-serif";
+      ctx.fillStyle = "#333";
+      const formattedAmount =
+        "$" +
+        unallocatedAmount.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      ctx.fillText(formattedAmount, centerX, centerY + 15);
+
+      ctx.restore();
+    },
+  };
+
   new Chart(canvas, {
     type: "doughnut",
     data: {
@@ -78,6 +107,7 @@ function initializeUnallocatedIncomeChart(data) {
         },
       },
     },
+    plugins: [centerTextPlugin],
   });
 }
 
