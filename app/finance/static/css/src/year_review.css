@@ -248,14 +248,58 @@
     font-style: italic;
 }
 
-@media (max-width: 768px) {
+.mobile-controls {
+    display: none;
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.mobile-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mobile-control-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.938rem;
+}
+
+.mobile-control-group .form-select {
+    min-height: 44px;
+    font-size: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    background-color: white;
+    cursor: pointer;
+}
+
+@media (max-width: 767px) {
     .year-nav {
         width: 100%;
         justify-content: center;
     }
 
-    .year-breakdown-section {
+    .mobile-controls {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .year-breakdown-section,
+    .category-breakdown-section {
+        display: none;
         padding: 1rem;
+    }
+
+    .year-breakdown-section.active-table,
+    .category-breakdown-section.active-table {
+        display: block;
     }
 
     .table-wrapper {
@@ -273,5 +317,15 @@
     .year-table th.sticky-col,
     .year-table td.sticky-col {
         min-width: 100px;
+    }
+
+    .year-table th[data-column],
+    .year-table td[data-column] {
+        display: none;
+    }
+
+    .year-table th[data-column].active-column,
+    .year-table td[data-column].active-column {
+        display: table-cell;
     }
 }

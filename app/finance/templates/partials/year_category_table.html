@@ -1,4 +1,4 @@
-<div class="category-breakdown-section">
+<div class="category-breakdown-section" data-table="{% if 'Needs' in title %}needs-details{% elif 'Wants' in title %}wants-details{% elif 'Debts' in title %}debts-details{% elif 'Savings' in title %}savings-details{% elif 'Investing' in title %}investing-details{% endif %}">
     <h2 class="section-title">{{ title }}</h2>
     {% if categories %}
     <div class="table-wrapper">
@@ -7,40 +7,40 @@
                 <thead>
                     <tr>
                         <th class="sticky-col">Category</th>
-                        <th class="text-end">Jan</th>
-                        <th class="text-end">Feb</th>
-                        <th class="text-end">Mar</th>
-                        <th class="text-end">Apr</th>
-                        <th class="text-end">May</th>
-                        <th class="text-end">Jun</th>
-                        <th class="text-end">Jul</th>
-                        <th class="text-end">Aug</th>
-                        <th class="text-end">Sep</th>
-                        <th class="text-end">Oct</th>
-                        <th class="text-end">Nov</th>
-                        <th class="text-end">Dec</th>
-                        <th class="text-end total-col">Total</th>
-                        <th class="text-end average-col">Average</th>
+                        <th class="text-end" data-column="jan">Jan</th>
+                        <th class="text-end" data-column="feb">Feb</th>
+                        <th class="text-end" data-column="mar">Mar</th>
+                        <th class="text-end" data-column="apr">Apr</th>
+                        <th class="text-end" data-column="may">May</th>
+                        <th class="text-end" data-column="jun">Jun</th>
+                        <th class="text-end" data-column="jul">Jul</th>
+                        <th class="text-end" data-column="aug">Aug</th>
+                        <th class="text-end" data-column="sep">Sep</th>
+                        <th class="text-end" data-column="oct">Oct</th>
+                        <th class="text-end" data-column="nov">Nov</th>
+                        <th class="text-end" data-column="dec">Dec</th>
+                        <th class="text-end total-col" data-column="total">Total</th>
+                        <th class="text-end average-col" data-column="average">Average</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for category_name, category_data in categories.items %}
                     <tr class="category-row {{ type_class }}">
                         <td class="sticky-col category-label">{{ category_name }}</td>
-                        <td class="text-end amount">${{ category_data.months.0|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.1|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.2|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.3|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.4|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.5|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.6|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.7|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.8|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.9|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.10|floatformat:2 }}</td>
-                        <td class="text-end amount">${{ category_data.months.11|floatformat:2 }}</td>
-                        <td class="text-end amount total-col">${{ category_data.total|floatformat:2 }}</td>
-                        <td class="text-end amount average-col">${{ category_data.average|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="jan">${{ category_data.months.0|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="feb">${{ category_data.months.1|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="mar">${{ category_data.months.2|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="apr">${{ category_data.months.3|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="may">${{ category_data.months.4|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="jun">${{ category_data.months.5|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="jul">${{ category_data.months.6|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="aug">${{ category_data.months.7|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="sep">${{ category_data.months.8|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="oct">${{ category_data.months.9|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="nov">${{ category_data.months.10|floatformat:2 }}</td>
+                        <td class="text-end amount" data-column="dec">${{ category_data.months.11|floatformat:2 }}</td>
+                        <td class="text-end amount total-col" data-column="total">${{ category_data.total|floatformat:2 }}</td>
+                        <td class="text-end amount average-col" data-column="average">${{ category_data.average|floatformat:2 }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -27,6 +27,39 @@
         </div>
 
         {% if has_data %}
+            <div class="mobile-controls">
+                <div class="mobile-control-group">
+                    <label for="table-selector">View Table:</label>
+                    <select id="table-selector" class="form-select">
+                        <option value="type-breakdown">Type Breakdown</option>
+                        <option value="needs-details">Needs Details</option>
+                        <option value="wants-details">Wants Details</option>
+                        <option value="debts-details">Debts Details</option>
+                        <option value="savings-details">Savings Details</option>
+                        <option value="investing-details">Investing Details</option>
+                    </select>
+                </div>
+                <div class="mobile-control-group">
+                    <label for="column-selector">View Column:</label>
+                    <select id="column-selector" class="form-select">
+                        <option value="jan">January</option>
+                        <option value="feb">February</option>
+                        <option value="mar">March</option>
+                        <option value="apr">April</option>
+                        <option value="may">May</option>
+                        <option value="jun">June</option>
+                        <option value="jul">July</option>
+                        <option value="aug">August</option>
+                        <option value="sep">September</option>
+                        <option value="oct">October</option>
+                        <option value="nov">November</option>
+                        <option value="dec">December</option>
+                        <option value="total">Total</option>
+                        <option value="average">Average</option>
+                    </select>
+                </div>
+            </div>
+
             {% include 'partials/year_type_breakdown_table.html' %}
 
             {% with categories=category_breakdowns.Need title="Needs Details" type_class="type-need" %}

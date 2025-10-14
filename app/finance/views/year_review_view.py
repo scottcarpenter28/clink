@@ -26,6 +26,41 @@ def get_next_year(year: int) -> int:
     return year + 1
 
 
+def get_month_columns() -> list:
+    return [
+        {"index": 0, "name": "Jan", "data_attr": "jan", "class": ""},
+        {"index": 1, "name": "Feb", "data_attr": "feb", "class": ""},
+        {"index": 2, "name": "Mar", "data_attr": "mar", "class": ""},
+        {"index": 3, "name": "Apr", "data_attr": "apr", "class": ""},
+        {"index": 4, "name": "May", "data_attr": "may", "class": ""},
+        {"index": 5, "name": "Jun", "data_attr": "jun", "class": ""},
+        {"index": 6, "name": "Jul", "data_attr": "jul", "class": ""},
+        {"index": 7, "name": "Aug", "data_attr": "aug", "class": ""},
+        {"index": 8, "name": "Sep", "data_attr": "sep", "class": ""},
+        {"index": 9, "name": "Oct", "data_attr": "oct", "class": ""},
+        {"index": 10, "name": "Nov", "data_attr": "nov", "class": ""},
+        {"index": 11, "name": "Dec", "data_attr": "dec", "class": ""},
+        {"index": 12, "name": "Total", "data_attr": "total", "class": "total-col"},
+        {
+            "index": 13,
+            "name": "Average",
+            "data_attr": "average",
+            "class": "average-col",
+        },
+    ]
+
+
+def get_type_rows() -> list:
+    return [
+        {"key": "Income", "label": "Income", "css_class": "type-income"},
+        {"key": "Need", "label": "Needs", "css_class": "type-need"},
+        {"key": "Want", "label": "Wants", "css_class": "type-want"},
+        {"key": "Debts", "label": "Debts", "css_class": "type-debts"},
+        {"key": "Savings", "label": "Savings", "css_class": "type-savings"},
+        {"key": "Investing", "label": "Investing", "css_class": "type-investing"},
+    ]
+
+
 def build_year_review_context(user, year: int) -> dict:
     budgets = get_budgets_for_year(user, year)
     transactions = get_transactions_for_year(user, year)
@@ -48,6 +83,8 @@ def build_year_review_context(user, year: int) -> dict:
         "next_year": next_year,
         "type_breakdown": type_breakdown,
         "category_breakdowns": category_breakdowns,
+        "month_columns": get_month_columns(),
+        "type_rows": get_type_rows(),
         "has_data": budgets.exists() or transactions.exists(),
     }
 
