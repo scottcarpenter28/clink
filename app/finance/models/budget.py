@@ -14,6 +14,14 @@ class Budget(BaseFinancialModel):
         blank=False, null=False, default=1
     )
 
+    allow_carry_over: models.BooleanField = models.BooleanField(
+        blank=False, null=False, default=False
+    )
+
+    carried_over_amount_in_cents: models.PositiveIntegerField = (
+        models.PositiveIntegerField(blank=False, null=False, default=0)
+    )
+
     def clean(self) -> None:
         super().clean()
         if self.budget_month < 1 or self.budget_month > 12:

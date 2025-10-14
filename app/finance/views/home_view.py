@@ -57,7 +57,7 @@ def build_home_context(user, year: int, month: int) -> dict:
     next_year, next_month = get_next_month(year, month)
     month_name = calendar.month_name[month]
 
-    budget_data = group_budgets_with_actuals(budgets, transactions)
+    budget_data = group_budgets_with_actuals(budgets, transactions, user, year, month)
     budget_totals = {
         budget_type: calculate_totals_for_budget_items(items)
         for budget_type, items in budget_data.items()
