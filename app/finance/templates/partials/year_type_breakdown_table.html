@@ -1,0 +1,46 @@
+{% load year_review_filters %}
+<div class="year-breakdown-section" data-table="type-breakdown">
+    <h2 class="section-title">Type Breakdown</h2>
+    <div class="table-wrapper">
+        <div class="table-responsive">
+            <table class="table year-table">
+                <thead>
+                    <tr>
+                        <th class="sticky-col">Type</th>
+                        {% for col in month_columns %}
+                        <th class="text-end {{ col.class }}" data-column="{{ col.data_attr }}">{{ col.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for type_row in type_rows %}
+                    <tr class="type-row {{ type_row.css_class }}">
+                        <td class="sticky-col type-label">{{ type_row.label }}</td>
+                        {% for col in month_columns %}
+                        <td class="text-end amount {{ col.class }}" data-column="{{ col.data_attr }}">${{ type_breakdown|get_item:type_row.key|get_item:col.index|floatformat:2 }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="footer-row expenses-row">
+                        <td class="sticky-col footer-label">Total Expenses</td>
+                        {% for col in month_columns %}
+                        {% with need_value=type_breakdown.Need|get_item:col.index want_value=type_breakdown.Want|get_item:col.index %}
+                        <td class="text-end amount {{ col.class }}" data-column="{{ col.data_attr }}">${{ need_value|add:want_value|floatformat:2 }}</td>
+                        {% endwith %}
+                        {% endfor %}
+                    </tr>
+                    <tr class="footer-row saved-row">
+                        <td class="sticky-col footer-label">Total Saved/Invested</td>
+                        {% for col in month_columns %}
+                        {% with savings_value=type_breakdown.Savings|get_item:col.index investing_value=type_breakdown.Investing|get_item:col.index %}
+                        <td class="text-end amount {{ col.class }}" data-column="{{ col.data_attr }}">${{ savings_value|add:investing_value|floatformat:2 }}</td>
+                        {% endwith %}
+                        {% endfor %}
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

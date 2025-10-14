@@ -1,0 +1,331 @@
+.year-nav-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.year-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-year-nav {
+    color: var(--color-secondary);
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.btn-year-nav:hover {
+    background-color: var(--color-fourth);
+    color: var(--color-secondary);
+}
+
+.current-year {
+    color: #333;
+    font-weight: 600;
+    min-width: 180px;
+    text-align: center;
+    font-size: 1.125rem;
+}
+
+.year-review-container {
+    padding: 0 1rem 2rem;
+}
+
+.year-breakdown-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.category-breakdown-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    margin: 0 -1.5rem;
+    padding: 0 1.5rem;
+}
+
+.table-responsive {
+    min-width: 100%;
+    overflow-x: auto;
+}
+
+.year-table {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.year-table thead {
+    background-color: var(--color-fourth);
+}
+
+.year-table th {
+    font-weight: 600;
+    color: #495057;
+    border: none;
+    padding: 0.75rem;
+    min-width: 100px;
+}
+
+.year-table th.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background-color: var(--color-fourth);
+    min-width: 140px;
+}
+
+.year-table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    min-width: 100px;
+}
+
+.year-table td.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: white;
+    font-weight: 600;
+}
+
+.year-table tbody tr:hover td {
+    background-color: #f8f9fa;
+}
+
+.year-table tbody tr:hover td.sticky-col {
+    background-color: #f8f9fa;
+}
+
+.type-label {
+    color: #333;
+    font-size: 1rem;
+}
+
+.type-row.type-income {
+    border-left: 4px solid #96a78d;
+}
+
+.type-row.type-need {
+    border-left: 4px solid #ffc7a7;
+}
+
+.type-row.type-want {
+    border-left: 4px solid #f08787;
+}
+
+.type-row.type-debts {
+    border-left: 4px solid #f8fab4;
+}
+
+.type-row.type-savings {
+    border-left: 4px solid #96a78d;
+}
+
+.type-row.type-investing {
+    border-left: 4px solid #b6ceb4;
+}
+
+.category-row.type-need {
+    border-left: 4px solid #ffc7a7;
+}
+
+.category-row.type-want {
+    border-left: 4px solid #f08787;
+}
+
+.category-row.type-debts {
+    border-left: 4px solid #f8fab4;
+}
+
+.category-row.type-savings {
+    border-left: 4px solid #96a78d;
+}
+
+.category-row.type-investing {
+    border-left: 4px solid #b6ceb4;
+}
+
+.category-label {
+    color: #333;
+    font-size: 0.938rem;
+}
+
+.year-table tfoot {
+    border-top: 2px solid var(--color-secondary);
+}
+
+.footer-row td {
+    font-weight: 600;
+    padding: 1rem 0.75rem;
+    background-color: var(--color-fourth);
+}
+
+.footer-row td.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: var(--color-fourth);
+}
+
+.footer-label {
+    color: #333;
+    font-size: 0.938rem;
+}
+
+.expenses-row {
+    border-left: 4px solid #f8fab4;
+}
+
+.saved-row {
+    border-left: 4px solid #96a78d;
+}
+
+.total-col {
+    font-weight: 700;
+    background-color: #f1f3f5;
+}
+
+.average-col {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.amount {
+    font-family: "Courier New", monospace;
+    font-weight: 600;
+}
+
+.empty-state-year {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #6c757d;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state-year svg {
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.empty-state-year h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-year p {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.empty-category-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    font-style: italic;
+}
+
+.mobile-controls {
+    display: none;
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.mobile-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mobile-control-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.938rem;
+}
+
+.mobile-control-group .form-select {
+    min-height: 44px;
+    font-size: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    background-color: white;
+    cursor: pointer;
+}
+
+@media (max-width: 767px) {
+    .year-nav {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .mobile-controls {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .year-breakdown-section,
+    .category-breakdown-section {
+        display: none;
+        padding: 1rem;
+    }
+
+    .year-breakdown-section.active-table,
+    .category-breakdown-section.active-table {
+        display: block;
+    }
+
+    .table-wrapper {
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+
+    .year-table th,
+    .year-table td {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        min-width: 80px;
+    }
+
+    .year-table th.sticky-col,
+    .year-table td.sticky-col {
+        min-width: 100px;
+    }
+
+    .year-table th[data-column],
+    .year-table td[data-column] {
+        display: none;
+    }
+
+    .year-table th[data-column].active-column,
+    .year-table td[data-column].active-column {
+        display: table-cell;
+    }
+}

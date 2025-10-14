@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Year Review - {{ year }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/src/year_review.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="year-review-container">
+    <div class="container-fluid">
+        <div class="year-nav-section">
+            <div class="year-nav">
+                <a href="{% url 'year_review_with_year' year=prev_year %}" class="btn-year-nav">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                </a>
+                <span class="current-year">{{ year }} Year Review</span>
+                <a href="{% url 'year_review_with_year' year=next_year %}" class="btn-year-nav">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        {% if has_data %}
+            <div class="mobile-controls">
+                <div class="mobile-control-group">
+                    <label for="table-selector">View Table:</label>
+                    <select id="table-selector" class="form-select">
+                        <option value="type-breakdown">Type Breakdown</option>
+                        <option value="needs-details">Needs Details</option>
+                        <option value="wants-details">Wants Details</option>
+                        <option value="debts-details">Debts Details</option>
+                        <option value="savings-details">Savings Details</option>
+                        <option value="investing-details">Investing Details</option>
+                    </select>
+                </div>
+                <div class="mobile-control-group">
+                    <label for="column-selector">View Column:</label>
+                    <select id="column-selector" class="form-select">
+                        <option value="jan">January</option>
+                        <option value="feb">February</option>
+                        <option value="mar">March</option>
+                        <option value="apr">April</option>
+                        <option value="may">May</option>
+                        <option value="jun">June</option>
+                        <option value="jul">July</option>
+                        <option value="aug">August</option>
+                        <option value="sep">September</option>
+                        <option value="oct">October</option>
+                        <option value="nov">November</option>
+                        <option value="dec">December</option>
+                        <option value="total">Total</option>
+                        <option value="average">Average</option>
+                    </select>
+                </div>
+            </div>
+
+            {% include 'partials/year_type_breakdown_table.html' %}
+
+            {% with categories=category_breakdowns.Need title="Needs Details" type_class="type-need" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Want title="Wants Details" type_class="type-want" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Debts title="Debts Details" type_class="type-debts" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Savings title="Savings Details" type_class="type-savings" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+
+            {% with categories=category_breakdowns.Investing title="Investing Details" type_class="type-investing" %}
+                {% include 'partials/year_category_table.html' %}
+            {% endwith %}
+        {% else %}
+            <div class="empty-state-year">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                </svg>
+                <h2>No Data for {{ year }}</h2>
+                <p>There are no budgets or transactions recorded for this year.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/src/year_review.js' %}"></script>
+{% endblock %}
