@@ -432,4 +432,34 @@
     .chart-mobile-alternative {
         display: block !important;
     }
+
+    .budget-table-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .budget-type-title {
+        text-align: center;
+    }
+
+    .btn-add-budget {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .section-header h3 {
+        text-align: center;
+    }
+
+    .btn-add-transaction {
+        width: 100%;
+        justify-content: center;
+    }
 }
