@@ -152,7 +152,7 @@ class AggregateByMonthAndTypeTests(TestCase):
 
         result = aggregate_by_month_and_type(budgets, transactions)
 
-        self.assertEqual(result["Want"][13], Decimal("100.00"))
+        self.assertEqual(result["Want"][13], Decimal("1200.00"))
 
     def test_returns_zero_when_no_transactions(self):
         budgets = Budget.objects.filter(user=self.user)
@@ -237,7 +237,7 @@ class AggregateByCategoryAndMonthTests(TestCase):
             budgets, transactions, TransactionType.WANT
         )
 
-        self.assertEqual(result["Dining Out"]["average"], Decimal("100.00"))
+        self.assertEqual(result["Dining Out"]["average"], Decimal("1200.00"))
 
     def test_returns_empty_dict_when_no_budgets_for_type(self):
         budgets = Budget.objects.filter(user=self.user)

@@ -37,7 +37,8 @@ def calculate_monthly_totals_for_transactions(
 
 def add_totals_and_average(monthly_totals: list[Decimal]) -> list[Decimal]:
     year_total = sum(monthly_totals)
-    average = year_total / 12 if year_total > 0 else Decimal("0.00")
+    non_zero_months = sum(1 for total in monthly_totals if total > 0)
+    average = year_total / non_zero_months if non_zero_months > 0 else Decimal("0.00")
     return monthly_totals + [year_total, average]
 
 
@@ -78,7 +79,10 @@ def aggregate_by_category_and_month(
         )
 
         year_total = sum(monthly_totals)
-        average = year_total / 12 if year_total > 0 else Decimal("0.00")
+        non_zero_months = sum(1 for total in monthly_totals if total > 0)
+        average = (
+            year_total / non_zero_months if non_zero_months > 0 else Decimal("0.00")
+        )
 
         result[category] = {
             "months": monthly_totals,
