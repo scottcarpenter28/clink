@@ -221,3 +221,89 @@ def calculate_budget_distribution(budgets: QuerySet[Budget]) -> dict:
             distribution[budget_type.value] = total_dollars
 
     return distribution
+
+
+def process_month_end_carry_over(user: User, year: int, month: int) -> dict:
+    budgets = Budget.objects.filter(
+        user=user, budget_year=year, budget_month=month, allow_carry_over=True
+    )
+
+    if month == 12:
+        next_year = year + 1
+        next_month = 1
+    else:
+        next_year = year
+        next_month = month + 1
+
+    results = {
+        "processed": 0,
+        "created": 0,
+        "updated": 0,
+        "skipped": 0,
+        "budgets_processed": [],
+    }
+
+    for budget in budgets:
+        transactions = Transaction.objects.filter(
+            user=user, date_of_expense__year=year, date_of_expense__month=month
+        )
+
+        actual_spent = calculate_actual_spent_for_budget(budget, transactions)
+        net_transfers = calculate_net_transfers_for_budget(budget)
+
+        carry_over_amount = max(
+            0,
+            budget.amount_in_cents
+            + budget.carried_over_amount_in_cents
+            + net_transfers
+            - actual_spent,
+        )
+
+        try:
+            next_budget = Budget.objects.get(
+                user=user,
+                category=budget.category,
+                type=budget.type,
+                budget_year=next_year,
+                budget_month=next_month,
+            )
+
+            if next_budget.carried_over_amount_in_cents != carry_over_amount:
+                next_budget.carried_over_amount_in_cents = carry_over_amount
+                next_budget.save()
+                results["updated"] += 1
+                results["budgets_processed"].append(
+                    {
+                        "category": budget.category,
+                        "type": budget.type,
+                        "carry_over": carry_over_amount,
+                        "action": "updated",
+                    }
+                )
+            else:
+                results["skipped"] += 1
+
+        except Budget.DoesNotExist:
+            next_budget = Budget.objects.create(
+                user=user,
+                category=budget.category,
+                type=budget.type,
+                amount_in_cents=budget.amount_in_cents,
+                budget_year=next_year,
+                budget_month=next_month,
+                allow_carry_over=budget.allow_carry_over,
+                carried_over_amount_in_cents=carry_over_amount,
+            )
+            results["created"] += 1
+            results["budgets_processed"].append(
+                {
+                    "category": budget.category,
+                    "type": budget.type,
+                    "carry_over": carry_over_amount,
+                    "action": "created",
+                }
+            )
+
+        results["processed"] += 1
+
+    return results
