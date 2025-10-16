@@ -1,0 +1,58 @@
+<div class="modal fade" id="transferFormModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transferFormModalLabel">Internal Transfer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="transferForm" autocomplete="off">
+                    <input type="hidden" id="transfer-year" name="year" value="{{ year }}">
+                    <input type="hidden" id="transfer-month" name="month" value="{{ month }}">
+
+                    <div class="mb-3">
+                        <label for="transfer-from-budget" class="form-label">From Budget</label>
+                        <select class="form-select" id="transfer-from-budget" name="source_budget_id" required>
+                            <option value="">Select source budget...</option>
+                        </select>
+                        <div class="transfer-available-info mt-2 d-none">
+                            <small class="text-muted">Available: <span id="transfer-from-available">$0.00</span></small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transfer-to-budget" class="form-label">To Budget</label>
+                        <select class="form-select" id="transfer-to-budget" name="destination_budget_id">
+                            <option value="">Select destination budget...</option>
+                            <option value="">Use Funds (Remove from budgets)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transfer-date" class="form-label">Transfer Date</label>
+                        <input type="date" class="form-control" id="transfer-date" name="transfer_date" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transfer-amount" class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="transfer-amount" name="amount" step="0.01" min="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="transfer-description" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="transfer-description" name="description" rows="2"></textarea>
+                    </div>
+
+                    <div class="alert alert-danger d-none" id="transfer-form-errors"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveTransferBtn">Create Transfer</button>
+            </div>
+        </div>
+    </div>
+</div>

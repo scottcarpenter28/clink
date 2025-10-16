@@ -7,6 +7,7 @@ from finance.views.budget_views import (
     get_budget,
     delete_budget,
     get_budget_categories,
+    get_all_budgets,
 )
 from finance.views.transaction_views import (
     create_transaction,
@@ -26,6 +27,7 @@ __all__ = [
     "get_budget",
     "delete_budget",
     "get_budget_categories",
+    "get_all_budgets",
     "create_transaction",
     "update_transaction",
     "get_transaction",

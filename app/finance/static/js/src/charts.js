@@ -30,9 +30,11 @@ function initializeUnallocatedIncomeChart(data) {
 
   const totalIncome = parseFloat(data.totalIncome);
   const totalAllocated = parseFloat(data.totalAllocated);
+  const totalCarriedOver = parseFloat(data.totalCarriedOver || 0);
   const unallocated = parseFloat(data.unallocated);
 
-  const allocatedAmount = Math.min(totalAllocated, totalIncome);
+  const totalAvailable = totalIncome + totalCarriedOver;
+  const allocatedAmount = Math.min(totalAllocated, totalAvailable);
   const unallocatedAmount = Math.max(0, unallocated);
 
   const centerTextPlugin = {
@@ -86,7 +88,7 @@ function initializeUnallocatedIncomeChart(data) {
             label: function (context) {
               const label = context.label || "";
               const value = context.parsed;
-              const percentage = ((value / totalIncome) * 100).toFixed(1);
+              const percentage = ((value / totalAvailable) * 100).toFixed(1);
               return (
                 label +
                 ": $" +

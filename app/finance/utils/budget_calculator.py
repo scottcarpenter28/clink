@@ -25,6 +25,7 @@ class BudgetLineItem:
         self.available = self.expected + self.carried_over + self.net_transfers
         self.remaining = self.expected - self.actual
         self.true_remaining = self.available - self.actual
+        self.allow_carry_over = budget.allow_carry_over
 
     def to_dict(self) -> dict:
         return {
@@ -37,6 +38,7 @@ class BudgetLineItem:
             "available": self.available,
             "remaining": self.remaining,
             "true_remaining": self.true_remaining,
+            "allow_carry_over": self.allow_carry_over,
         }
 
 
@@ -136,12 +138,20 @@ def create_budget_line_items_for_type(
 def calculate_totals_for_budget_items(budget_items: list[dict]) -> dict:
     total_expected = sum(item["expected"] for item in budget_items)
     total_actual = sum(item["actual"] for item in budget_items)
+    total_carried_over = sum(item["carried_over"] for item in budget_items)
+    total_net_transfers = sum(item["net_transfers"] for item in budget_items)
+    total_available = sum(item["available"] for item in budget_items)
     total_remaining = sum(item["remaining"] for item in budget_items)
+    total_true_remaining = sum(item["true_remaining"] for item in budget_items)
 
     return {
         "expected": total_expected,
         "actual": total_actual,
+        "carried_over": total_carried_over,
+        "net_transfers": total_net_transfers,
+        "available": total_available,
         "remaining": total_remaining,
+        "true_remaining": total_true_remaining,
     }
 
 

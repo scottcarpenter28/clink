@@ -315,6 +315,28 @@
     color: #dc3545;
 }
 
+.btn-transfer:hover {
+    color: var(--color-secondary);
+}
+
+.badge-carry-over {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-secondary);
+    opacity: 0.7;
+}
+
+.positive-carry-over {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.amount-carried-over,
+.amount-available {
+    font-family: "Courier New", monospace;
+    font-weight: 600;
+}
+
 .empty-state {
     text-align: center;
     padding: 3rem 1rem;
@@ -461,5 +483,23 @@
     .btn-add-transaction {
         width: 100%;
         justify-content: center;
+    }
+
+    .budget-table th:nth-child(3),
+    .budget-table td:nth-child(3) {
+        display: none;
+    }
+
+    .budget-table th:nth-child(4),
+    .budget-table td:nth-child(4) {
+        display: none;
+    }
+
+    .badge-carry-over {
+        font-size: 0.75rem;
+    }
+
+    .btn-icon {
+        padding: 0.125rem;
     }
 }

@@ -3,9 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 
-from finance.models import Budget
+from finance.models import Budget, Transaction
 from finance.forms import BudgetItemForm
 from finance.enums.transaction_enums import TransactionType
+from finance.utils.budget_calculator import (
+    calculate_carry_over_for_budget,
+    calculate_net_transfers_for_budget,
+)
 
 
 @login_required
@@ -105,3 +109,34 @@ def get_budget_categories(
     )
 
     return JsonResponse({"success": True, "categories": list(categories)})
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_all_budgets(request: HttpRequest, year: int, month: int) -> HttpResponse:
+    budgets = Budget.objects.filter(
+        user=request.user, budget_year=year, budget_month=month
+    ).order_by("category")
+
+    budget_list = []
+    for budget in budgets:
+        carried_over_cents = calculate_carry_over_for_budget(
+            request.user, budget.category, budget.type, year, month
+        )
+        net_transfer_cents = calculate_net_transfers_for_budget(budget)
+
+        available_cents = (
+            budget.amount_in_cents + carried_over_cents + net_transfer_cents
+        )
+        available_dollars = float(available_cents) / 100
+
+        budget_list.append(
+            {
+                "id": budget.id,
+                "category": budget.category,
+                "type": budget.type,
+                "available": f"{available_dollars:.2f}",
+            }
+        )
+
+    return JsonResponse({"success": True, "budgets": budget_list})
