@@ -143,3 +143,74 @@ class BudgetModelTests(TestCase):
         )
         self.assertEqual(october_2025_budgets.count(), 1)
         self.assertEqual(october_2025_budgets.first().category, "Entertainment")
+
+
+class BudgetCarryOverFieldsTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", password="testpass123"
+        )
+
+    def test_allow_carry_over_defaults_to_false(self):
+        budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.NEED.name,
+            category="Groceries",
+            amount_in_cents=50000,
+            budget_year=2025,
+            budget_month=10,
+        )
+
+        self.assertFalse(budget.allow_carry_over)
+
+    def test_carried_over_amount_defaults_to_zero(self):
+        budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.SAVINGS.name,
+            category="Emergency Fund",
+            amount_in_cents=100000,
+            budget_year=2025,
+            budget_month=10,
+        )
+
+        self.assertEqual(budget.carried_over_amount_in_cents, 0)
+
+    def test_budget_with_carry_over_enabled(self):
+        budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.SAVINGS.name,
+            category="Vacation",
+            amount_in_cents=75000,
+            budget_year=2025,
+            budget_month=10,
+            allow_carry_over=True,
+        )
+
+        self.assertTrue(budget.allow_carry_over)
+
+    def test_budget_with_carried_over_amount(self):
+        budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.INVESTING.name,
+            category="Index Fund",
+            amount_in_cents=200000,
+            budget_year=2025,
+            budget_month=10,
+            allow_carry_over=True,
+            carried_over_amount_in_cents=50000,
+        )
+
+        self.assertEqual(budget.carried_over_amount_in_cents, 50000)
+
+    def test_carried_over_amount_in_cents_stored_correctly(self):
+        budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.SAVINGS.name,
+            category="Emergency Fund",
+            amount_in_cents=100000,
+            budget_year=2025,
+            budget_month=10,
+            carried_over_amount_in_cents=25050,
+        )
+
+        self.assertEqual(budget.carried_over_amount_in_cents, 25050)

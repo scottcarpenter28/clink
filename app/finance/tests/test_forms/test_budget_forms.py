@@ -2,7 +2,12 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from finance.forms import BudgetItemForm, MultiBudgetForm, BudgetItemFormSet
+from finance.forms import (
+    BudgetItemForm,
+    MultiBudgetForm,
+    BudgetItemFormSet,
+    InternalTransferForm,
+)
 from finance.models import Budget
 from finance.enums import TransactionType
 
@@ -390,3 +395,171 @@ class MultiBudgetFormSaveTests(TestCase):
 
         with self.assertRaises(ValueError):
             form.save(self.user)
+
+
+class BudgetItemFormCarryOverTests(TestCase):
+    def test_budget_item_form_includes_allow_carry_over_field(self):
+        form = BudgetItemForm()
+        self.assertIn("allow_carry_over", form.fields)
+
+    def test_allow_carry_over_is_optional(self):
+        data = {
+            "type": TransactionType.SAVINGS.name,
+            "category": "Emergency Fund",
+            "amount": "1000.00",
+        }
+        form = BudgetItemForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_allow_carry_over_defaults_to_false(self):
+        data = {
+            "type": TransactionType.SAVINGS.name,
+            "category": "Emergency Fund",
+            "amount": "1000.00",
+        }
+        form = BudgetItemForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertFalse(form.cleaned_data.get("allow_carry_over", False))
+
+    def test_allow_carry_over_can_be_set_to_true(self):
+        data = {
+            "type": TransactionType.SAVINGS.name,
+            "category": "Emergency Fund",
+            "amount": "1000.00",
+            "allow_carry_over": True,
+        }
+        form = BudgetItemForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.cleaned_data["allow_carry_over"])
+
+
+class InternalTransferFormTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", password="testpass123"
+        )
+
+        self.source_budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.SAVINGS.name,
+            category="Emergency Fund",
+            amount_in_cents=100000,
+            budget_year=2025,
+            budget_month=10,
+        )
+
+        self.dest_budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.SAVINGS.name,
+            category="Vacation",
+            amount_in_cents=50000,
+            budget_year=2025,
+            budget_month=10,
+        )
+
+    def test_valid_internal_transfer_form(self):
+        data = {
+            "source_budget_id": self.source_budget.id,
+            "destination_budget_id": self.dest_budget.id,
+            "amount": "200.00",
+            "transfer_date": "2025-10-15",
+            "description": "Moving funds",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_transfer_to_use_funds_with_empty_destination(self):
+        data = {
+            "source_budget_id": self.source_budget.id,
+            "destination_budget_id": "",
+            "amount": "150.00",
+            "transfer_date": "2025-10-15",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertIsNone(form.cleaned_data["destination_budget_id"])
+
+    def test_negative_amount_fails(self):
+        data = {
+            "source_budget_id": self.source_budget.id,
+            "destination_budget_id": self.dest_budget.id,
+            "amount": "-50.00",
+            "transfer_date": "2025-10-15",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("amount", form.errors)
+
+    def test_zero_amount_fails(self):
+        data = {
+            "source_budget_id": self.source_budget.id,
+            "destination_budget_id": self.dest_budget.id,
+            "amount": "0.00",
+            "transfer_date": "2025-10-15",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("amount", form.errors)
+
+    def test_invalid_source_budget_id_fails(self):
+        data = {
+            "source_budget_id": 99999,
+            "destination_budget_id": self.dest_budget.id,
+            "amount": "100.00",
+            "transfer_date": "2025-10-15",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("source_budget_id", form.errors)
+
+    def test_same_source_and_destination_fails(self):
+        data = {
+            "source_budget_id": self.source_budget.id,
+            "destination_budget_id": self.source_budget.id,
+            "amount": "100.00",
+            "transfer_date": "2025-10-15",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Source and destination budgets cannot be the same", str(form.errors)
+        )
+
+    def test_transfer_from_income_budget_fails(self):
+        income_budget = Budget.objects.create(
+            user=self.user,
+            type=TransactionType.INCOME.name,
+            category="Salary",
+            amount_in_cents=500000,
+            budget_year=2025,
+            budget_month=10,
+        )
+
+        data = {
+            "source_budget_id": income_budget.id,
+            "destination_budget_id": self.dest_budget.id,
+            "amount": "100.00",
+            "transfer_date": "2025-10-15",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("source_budget_id", form.errors)
+
+    def test_missing_required_fields(self):
+        data = {}
+        form = InternalTransferForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("source_budget_id", form.errors)
+        self.assertIn("amount", form.errors)
+        self.assertIn("transfer_date", form.errors)
+
+    def test_description_is_optional(self):
+        data = {
+            "source_budget_id": self.source_budget.id,
+            "destination_budget_id": self.dest_budget.id,
+            "amount": "100.00",
+            "transfer_date": "2025-10-15",
+        }
+        form = InternalTransferForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data.get("description", ""), "")
