@@ -18,7 +18,7 @@ class GroupBudgetsWithActualsTests(TestCase):
         budgets = Budget.objects.filter(user=self.user)
         transactions = Transaction.objects.filter(user=self.user)
 
-        result = group_budgets_with_actuals(budgets, transactions)
+        result = group_budgets_with_actuals(budgets, transactions, self.user, 2025, 10)
 
         for transaction_type in TransactionType:
             self.assertIn(transaction_type.value, result)
@@ -52,7 +52,7 @@ class GroupBudgetsWithActualsTests(TestCase):
         budgets = Budget.objects.filter(user=self.user)
         transactions = Transaction.objects.filter(user=self.user)
 
-        result = group_budgets_with_actuals(budgets, transactions)
+        result = group_budgets_with_actuals(budgets, transactions, self.user, 2025, 10)
 
         self.assertEqual(len(result[TransactionType.INCOME.value]), 1)
         self.assertEqual(len(result[TransactionType.NEED.value]), 2)
@@ -78,7 +78,7 @@ class GroupBudgetsWithActualsTests(TestCase):
         budgets = Budget.objects.filter(user=self.user)
         transactions = Transaction.objects.filter(user=self.user)
 
-        result = group_budgets_with_actuals(budgets, transactions)
+        result = group_budgets_with_actuals(budgets, transactions, self.user, 2025, 10)
 
         need_budgets = result[TransactionType.NEED.value]
         self.assertEqual(len(need_budgets), 1)

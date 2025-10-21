@@ -1,18 +1,31 @@
 from decimal import Decimal
+from typing import Optional
 
 from django.db.models import Sum, QuerySet
+from django.contrib.auth.models import User
 
-from finance.models import Budget, Transaction
+from finance.models import Budget, Transaction, InternalTransfer
 from finance.enums.transaction_enums import TransactionType
 
 
 class BudgetLineItem:
-    def __init__(self, budget: Budget, actual_spent_cents: int):
+    def __init__(
+        self,
+        budget: Budget,
+        actual_spent_cents: int,
+        carried_over_cents: int = 0,
+        net_transfer_cents: int = 0,
+    ):
         self.id = budget.id
         self.category = budget.category
         self.expected = Decimal(str(budget.amount_dollars))
         self.actual = Decimal(actual_spent_cents) / 100
+        self.carried_over = Decimal(carried_over_cents) / 100
+        self.net_transfers = Decimal(net_transfer_cents) / 100
+        self.available = self.expected + self.carried_over + self.net_transfers
         self.remaining = self.expected - self.actual
+        self.true_remaining = self.available - self.actual
+        self.allow_carry_over = budget.allow_carry_over
 
     def to_dict(self) -> dict:
         return {
@@ -20,7 +33,12 @@ class BudgetLineItem:
             "category": self.category,
             "expected": self.expected,
             "actual": self.actual,
+            "carried_over": self.carried_over,
+            "net_transfers": self.net_transfers,
+            "available": self.available,
             "remaining": self.remaining,
+            "true_remaining": self.true_remaining,
+            "allow_carry_over": self.allow_carry_over,
         }
 
 
@@ -33,17 +51,85 @@ def calculate_actual_spent_for_budget(
     return result or 0
 
 
+def calculate_carry_over_for_budget(
+    user: User, category: str, transaction_type: str, year: int, month: int
+) -> int:
+    if month == 1:
+        prev_year = year - 1
+        prev_month = 12
+    else:
+        prev_year = year
+        prev_month = month - 1
+
+    try:
+        previous_budget = Budget.objects.get(
+            user=user,
+            category=category,
+            type=transaction_type,
+            budget_year=prev_year,
+            budget_month=prev_month,
+        )
+    except Budget.DoesNotExist:
+        return 0
+
+    if not previous_budget.allow_carry_over:
+        return 0
+
+    previous_transactions = Transaction.objects.filter(
+        user=user,
+        date_of_expense__year=prev_year,
+        date_of_expense__month=prev_month,
+    )
+
+    previous_actual_spent = calculate_actual_spent_for_budget(
+        previous_budget, previous_transactions
+    )
+
+    previous_net_transfers = calculate_net_transfers_for_budget(previous_budget)
+
+    carry_over_amount = (
+        previous_budget.amount_in_cents
+        + previous_budget.carried_over_amount_in_cents
+        + previous_net_transfers
+        - previous_actual_spent
+    )
+
+    return max(0, carry_over_amount)
+
+
+def calculate_net_transfers_for_budget(budget: Budget) -> int:
+    incoming = InternalTransfer.objects.filter(destination_budget=budget).aggregate(
+        total=Sum("amount_in_cents")
+    )["total"]
+
+    outgoing = InternalTransfer.objects.filter(source_budget=budget).aggregate(
+        total=Sum("amount_in_cents")
+    )["total"]
+
+    return (incoming or 0) - (outgoing or 0)
+
+
 def create_budget_line_items_for_type(
     transaction_type: TransactionType,
     budgets: QuerySet[Budget],
     transactions: QuerySet[Transaction],
+    user: User,
+    year: int,
+    month: int,
 ) -> list[dict]:
     type_budgets = budgets.filter(type=transaction_type.name)
     budget_items = []
 
     for budget in type_budgets:
         actual_spent_cents = calculate_actual_spent_for_budget(budget, transactions)
-        line_item = BudgetLineItem(budget, actual_spent_cents)
+        carried_over_cents = calculate_carry_over_for_budget(
+            user, budget.category, budget.type, year, month
+        )
+        net_transfer_cents = calculate_net_transfers_for_budget(budget)
+
+        line_item = BudgetLineItem(
+            budget, actual_spent_cents, carried_over_cents, net_transfer_cents
+        )
         budget_items.append(line_item.to_dict())
 
     return budget_items
@@ -52,23 +138,35 @@ def create_budget_line_items_for_type(
 def calculate_totals_for_budget_items(budget_items: list[dict]) -> dict:
     total_expected = sum(item["expected"] for item in budget_items)
     total_actual = sum(item["actual"] for item in budget_items)
+    total_carried_over = sum(item["carried_over"] for item in budget_items)
+    total_net_transfers = sum(item["net_transfers"] for item in budget_items)
+    total_available = sum(item["available"] for item in budget_items)
     total_remaining = sum(item["remaining"] for item in budget_items)
+    total_true_remaining = sum(item["true_remaining"] for item in budget_items)
 
     return {
         "expected": total_expected,
         "actual": total_actual,
+        "carried_over": total_carried_over,
+        "net_transfers": total_net_transfers,
+        "available": total_available,
         "remaining": total_remaining,
+        "true_remaining": total_true_remaining,
     }
 
 
 def group_budgets_with_actuals(
-    budgets: QuerySet[Budget], transactions: QuerySet[Transaction]
+    budgets: QuerySet[Budget],
+    transactions: QuerySet[Transaction],
+    user: User,
+    year: int,
+    month: int,
 ) -> dict[str, list[dict]]:
     budget_groups = {}
 
     for transaction_type in TransactionType:
         budget_groups[transaction_type.value] = create_budget_line_items_for_type(
-            transaction_type, budgets, transactions
+            transaction_type, budgets, transactions, user, year, month
         )
 
     return budget_groups
@@ -123,3 +221,89 @@ def calculate_budget_distribution(budgets: QuerySet[Budget]) -> dict:
             distribution[budget_type.value] = total_dollars
 
     return distribution
+
+
+def process_month_end_carry_over(user: User, year: int, month: int) -> dict:
+    budgets = Budget.objects.filter(
+        user=user, budget_year=year, budget_month=month, allow_carry_over=True
+    )
+
+    if month == 12:
+        next_year = year + 1
+        next_month = 1
+    else:
+        next_year = year
+        next_month = month + 1
+
+    results = {
+        "processed": 0,
+        "created": 0,
+        "updated": 0,
+        "skipped": 0,
+        "budgets_processed": [],
+    }
+
+    for budget in budgets:
+        transactions = Transaction.objects.filter(
+            user=user, date_of_expense__year=year, date_of_expense__month=month
+        )
+
+        actual_spent = calculate_actual_spent_for_budget(budget, transactions)
+        net_transfers = calculate_net_transfers_for_budget(budget)
+
+        carry_over_amount = max(
+            0,
+            budget.amount_in_cents
+            + budget.carried_over_amount_in_cents
+            + net_transfers
+            - actual_spent,
+        )
+
+        try:
+            next_budget = Budget.objects.get(
+                user=user,
+                category=budget.category,
+                type=budget.type,
+                budget_year=next_year,
+                budget_month=next_month,
+            )
+
+            if next_budget.carried_over_amount_in_cents != carry_over_amount:
+                next_budget.carried_over_amount_in_cents = carry_over_amount
+                next_budget.save()
+                results["updated"] += 1
+                results["budgets_processed"].append(
+                    {
+                        "category": budget.category,
+                        "type": budget.type,
+                        "carry_over": carry_over_amount,
+                        "action": "updated",
+                    }
+                )
+            else:
+                results["skipped"] += 1
+
+        except Budget.DoesNotExist:
+            next_budget = Budget.objects.create(
+                user=user,
+                category=budget.category,
+                type=budget.type,
+                amount_in_cents=budget.amount_in_cents,
+                budget_year=next_year,
+                budget_month=next_month,
+                allow_carry_over=budget.allow_carry_over,
+                carried_over_amount_in_cents=carry_over_amount,
+            )
+            results["created"] += 1
+            results["budgets_processed"].append(
+                {
+                    "category": budget.category,
+                    "type": budget.type,
+                    "carry_over": carry_over_amount,
+                    "action": "created",
+                }
+            )
+
+        results["processed"] += 1
+
+    return results

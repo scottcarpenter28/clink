@@ -1,5 +1,6 @@
 from typing import TypedDict, Any, Dict
 from decimal import Decimal
+from datetime import date
 
 from django import forms
 from django.contrib.auth.models import User
@@ -32,6 +33,7 @@ class BudgetItemForm(forms.Form):
     )
     category = forms.CharField(max_length=100, required=True)
     amount = forms.DecimalField(decimal_places=2, required=True)
+    allow_carry_over = forms.BooleanField(required=False, initial=False)
 
     def clean_amount(self) -> Decimal:
         amount = self.cleaned_data.get("amount")
@@ -131,3 +133,43 @@ class MultiBudgetForm(forms.Form):
                 created_budgets.append(budget)
 
         return created_budgets
+
+
+class InternalTransferForm(forms.Form):
+    source_budget_id = forms.IntegerField(required=True)
+    destination_budget_id = forms.IntegerField(required=False)
+    amount = forms.DecimalField(decimal_places=2, required=True)
+    transfer_date = forms.DateField(required=True)
+    description = forms.CharField(max_length=255, required=False)
+
+    def clean_amount(self) -> Decimal:
+        amount = self.cleaned_data.get("amount")
+        if amount is not None and amount <= 0:
+            raise forms.ValidationError("Transfer amount must be positive.")
+        return amount
+
+    def clean_source_budget_id(self) -> int:
+        source_budget_id = self.cleaned_data.get("source_budget_id")
+        if source_budget_id:
+            try:
+                source_budget = Budget.objects.get(id=source_budget_id)
+                if source_budget.type == TransactionType.INCOME.name:
+                    raise forms.ValidationError(
+                        "Cannot transfer from INCOME type budgets."
+                    )
+            except Budget.DoesNotExist:
+                raise forms.ValidationError("Source budget does not exist.")
+        return source_budget_id
+
+    def clean(self) -> Dict[str, Any]:
+        cleaned_data = super().clean()
+        source_budget_id = cleaned_data.get("source_budget_id")
+        destination_budget_id = cleaned_data.get("destination_budget_id")
+
+        if source_budget_id and destination_budget_id:
+            if source_budget_id == destination_budget_id:
+                raise forms.ValidationError(
+                    "Source and destination budgets cannot be the same."
+                )
+
+        return cleaned_data

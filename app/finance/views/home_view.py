@@ -17,6 +17,7 @@ from finance.utils.budget_calculator import (
     calculate_totals_for_budget_items,
     calculate_unallocated_income,
     calculate_budget_distribution,
+    process_month_end_carry_over,
 )
 
 
@@ -50,14 +51,16 @@ def get_next_month(year: int, month: int) -> tuple[int, int]:
 
 
 def build_home_context(user, year: int, month: int) -> dict:
+    prev_year, prev_month = get_previous_month(year, month)
+    process_month_end_carry_over(user, prev_year, prev_month)
+
     budgets = get_budgets_for_month(user, year, month)
     transactions = get_transactions_for_month(user, year, month)
 
-    prev_year, prev_month = get_previous_month(year, month)
     next_year, next_month = get_next_month(year, month)
     month_name = calendar.month_name[month]
 
-    budget_data = group_budgets_with_actuals(budgets, transactions)
+    budget_data = group_budgets_with_actuals(budgets, transactions, user, year, month)
     budget_totals = {
         budget_type: calculate_totals_for_budget_items(items)
         for budget_type, items in budget_data.items()

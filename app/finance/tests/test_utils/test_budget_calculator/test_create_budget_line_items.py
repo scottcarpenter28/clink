@@ -17,7 +17,7 @@ class CreateBudgetLineItemsForTypeTests(TestCase):
         transactions = Transaction.objects.filter(user=self.user)
 
         result = create_budget_line_items_for_type(
-            TransactionType.INCOME, budgets, transactions
+            TransactionType.INCOME, budgets, transactions, self.user, 2025, 10
         )
 
         self.assertEqual(result, [])
@@ -44,7 +44,7 @@ class CreateBudgetLineItemsForTypeTests(TestCase):
         transactions = Transaction.objects.filter(user=self.user)
 
         result = create_budget_line_items_for_type(
-            TransactionType.INCOME, budgets, transactions
+            TransactionType.INCOME, budgets, transactions, self.user, 2025, 10
         )
 
         self.assertEqual(len(result), 2)
@@ -71,7 +71,7 @@ class CreateBudgetLineItemsForTypeTests(TestCase):
         transactions = Transaction.objects.filter(user=self.user)
 
         result = create_budget_line_items_for_type(
-            TransactionType.INCOME, budgets, transactions
+            TransactionType.INCOME, budgets, transactions, self.user, 2025, 10
         )
 
         self.assertEqual(len(result), 1)

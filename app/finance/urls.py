@@ -12,10 +12,16 @@ from finance.views import (
     get_budget,
     delete_budget,
     get_budget_categories,
+    get_all_budgets,
     create_transaction,
     update_transaction,
     get_transaction,
     delete_transaction,
+)
+from finance.views.internal_transfer_views import (
+    create_internal_transfer,
+    get_internal_transfers,
+    delete_internal_transfer,
 )
 
 urlpatterns = [
@@ -34,6 +40,20 @@ urlpatterns = [
         "budgets/<int:year>/<int:month>/<str:type>/categories/",
         get_budget_categories,
         name="get_budget_categories",
+    ),
+    path(
+        "budgets/<int:year>/<int:month>/all/",
+        get_all_budgets,
+        name="get_all_budgets",
+    ),
+    path(
+        "transfers/create/", create_internal_transfer, name="create_internal_transfer"
+    ),
+    path("transfers/", get_internal_transfers, name="get_internal_transfers"),
+    path(
+        "transfers/<int:transfer_id>/delete/",
+        delete_internal_transfer,
+        name="delete_internal_transfer",
     ),
     path("transactions/create/", create_transaction, name="create_transaction"),
     path("transactions/<int:transaction_id>/", get_transaction, name="get_transaction"),
