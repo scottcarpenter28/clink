@@ -5,21 +5,77 @@ services:
     image: postgres:17
     container_name: clink_postgres
     environment:
-      POSTGRES_DB: clink
-      POSTGRES_USER: clink_user
-      POSTGRES_PASSWORD: clink_password
+      POSTGRES_DB: ${DB_NAME:-clink}
+      POSTGRES_USER: ${DB_USER:-clink_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-clink_password}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-clink_user} -d ${DB_NAME:-clink}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
+    networks:
+      - clink_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clink_web
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-clink}
+      DB_USER: ${DB_USER:-clink_user}
+      DB_PASSWORD: ${DB_PASSWORD:-clink_password}
+      SECRET_KEY: ${SECRET_KEY:-please-change-this-secret-key-in-production}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000}
+      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-changeme}
+      SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    volumes:
+      - static_files:/app/staticfiles
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8000/admin/login/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - clink_network
 
   adminer:
     image: adminer
     container_name: clink_adminer
     ports:
-      - "8080:8080"
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - postgres
     restart: unless-stopped
+    networks:
+      - clink_network
 
 volumes:
   postgres_data:
+  static_files:
+
+networks:
+  clink_network:
+    driver: bridge

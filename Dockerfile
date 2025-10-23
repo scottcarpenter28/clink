@@ -31,7 +31,8 @@ ENV PYTHONUNBUFFERED=1 \
 
 RUN apk add --no-cache \
     libpq \
-    postgresql-client
+    postgresql-client \
+    wget
 
 RUN addgroup -g 1000 appuser && \
     adduser -D -u 1000 -G appuser appuser
@@ -41,6 +42,10 @@ WORKDIR /app
 # Copy Python dependencies from builder stage
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
+
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 COPY --chown=appuser:appuser app/ /app/
 
 RUN mkdir -p /app/staticfiles && \
@@ -50,6 +55,4 @@ USER appuser
 
 EXPOSE 8000
 
-# Set entrypoint script (will be created in Phase 2)
-# For now, use a simple command to verify the build works
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["/entrypoint.sh"]
