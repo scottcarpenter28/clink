@@ -21,12 +21,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-f69!lu&dzhxprhlryj%ibg!y7okfzf!$)7jhc9_@t(7#p8#z(6"
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-f69!lu&dzhxprhlryj%ibg!y7okfzf!$)7jhc9_@t(7#p8#z(6"
+)
+
+if SECRET_KEY == "django-insecure-f69!lu&dzhxprhlryj%ibg!y7okfzf!$)7jhc9_@t(7#p8#z(6":
+    import warnings
+
+    warnings.warn(
+        "WARNING: Using default SECRET_KEY. Generate a new one for production!",
+        RuntimeWarning,
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = (
+    os.environ.get("ALLOWED_HOSTS", "").split(",")
+    if os.environ.get("ALLOWED_HOSTS")
+    else []
+)
+
+CSRF_TRUSTED_ORIGINS = (
+    os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if os.environ.get("CSRF_TRUSTED_ORIGINS")
+    else []
+)
 
 
 # Application definition
@@ -121,6 +141,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
