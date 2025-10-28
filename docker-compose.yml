@@ -13,7 +13,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-clink_user} -d ${DB_NAME:-clink}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-clink_user} -d ${DB_NAME:-clink}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -52,7 +56,11 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8000/admin/login/ || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:8000/admin/login/ || exit 1",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -72,9 +80,83 @@ services:
     networks:
       - clink_network
 
+  redis:
+    image: redis:7-alpine
+    container_name: clink_redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - clink_network
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clink_celery_worker
+    command: celery -A clink worker --loglevel=${CELERY_LOG_LEVEL:-info}
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-clink}
+      DB_USER: ${DB_USER:-clink_user}
+      DB_PASSWORD: ${DB_PASSWORD:-clink_password}
+      SECRET_KEY: ${SECRET_KEY:-please-change-this-secret-key-in-production}
+      DEBUG: ${DEBUG:-False}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-noreply@clink.com}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - clink_network
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clink_celery_beat
+    command: celery -A clink beat --loglevel=${CELERY_LOG_LEVEL:-info}
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-clink}
+      DB_USER: ${DB_USER:-clink_user}
+      DB_PASSWORD: ${DB_PASSWORD:-clink_password}
+      SECRET_KEY: ${SECRET_KEY:-please-change-this-secret-key-in-production}
+      DEBUG: ${DEBUG:-False}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - clink_network
+
 volumes:
   postgres_data:
   static_files:
+  redis_data:
 
 networks:
   clink_network:
