@@ -6,6 +6,7 @@ from finance.forms.budget_forms import (
 )
 from finance.forms.transaction_forms import TransactionForm
 from finance.forms.auth_forms import LoginForm, SignUpForm
+from finance.forms.user_settings_forms import UserSettingsForm
 
 __all__ = [
     "BudgetItemForm",
@@ -15,4 +16,5 @@ __all__ = [
     "TransactionForm",
     "LoginForm",
     "SignUpForm",
+    "UserSettingsForm",
 ]
