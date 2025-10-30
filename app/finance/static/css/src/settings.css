@@ -1,0 +1,271 @@
+.settings-container {
+    padding: 2rem 0 4rem;
+}
+
+.settings-header {
+    margin-bottom: 2rem;
+}
+
+.settings-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.settings-subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.messages-section {
+    margin-bottom: 2rem;
+}
+
+.alert-message {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    animation: slideDown 0.3s ease;
+}
+
+.alert-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-message.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.settings-card {
+    background-color: var(--color-fourth);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem;
+}
+
+.settings-form {
+    max-width: 800px;
+}
+
+.form-errors {
+    margin-bottom: 1.5rem;
+}
+
+.field-error {
+    display: block;
+    color: #d9534f;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #f8d7da;
+    border-radius: 4px;
+    border: 1px solid #f5c6cb;
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.section-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.section-description {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+.form-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.form-group-section {
+    padding-bottom: 2rem;
+}
+
+.form-group-section:not(:last-child) {
+    border-bottom: 1px solid var(--color-tertiary);
+}
+
+.subsection-heading {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: var(--color-primary);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.checkbox-wrapper:hover {
+    border-color: var(--color-tertiary);
+    background-color: white;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin-top: 0.125rem;
+    cursor: pointer;
+    accent-color: var(--color-secondary);
+}
+
+.checkbox-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    cursor: pointer;
+    margin: 0;
+}
+
+.label-text {
+    font-weight: 500;
+    color: #333;
+    font-size: 1rem;
+}
+
+.label-help {
+    font-size: 0.875rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+.form-actions {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-tertiary);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-save {
+    padding: 0.875rem 2.5rem;
+    background-color: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+    background-color: #8d9b87;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(162, 175, 155, 0.3);
+}
+
+.btn-save:active {
+    transform: translateY(0);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-card {
+        padding: 1.5rem;
+    }
+
+    .settings-title {
+        font-size: 1.75rem;
+    }
+
+    .section-heading {
+        font-size: 1.25rem;
+    }
+
+    .subsection-heading {
+        font-size: 1rem;
+    }
+
+    .form-groups {
+        gap: 2rem;
+    }
+
+    .form-group-section {
+        padding-bottom: 1.5rem;
+    }
+
+    .checkbox-wrapper {
+        padding: 0.875rem;
+    }
+
+    .label-text {
+        font-size: 0.95rem;
+    }
+
+    .label-help {
+        font-size: 0.8125rem;
+    }
+
+    .form-actions {
+        justify-content: stretch;
+    }
+
+    .btn-save {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .settings-container {
+        padding: 1rem 0 3rem;
+    }
+
+    .settings-card {
+        padding: 1.25rem;
+    }
+
+    .settings-title {
+        font-size: 1.5rem;
+    }
+
+    .checkbox-wrapper {
+        padding: 0.75rem;
+    }
+}
