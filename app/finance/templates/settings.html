@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/src/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="container-fluid">
+        <div class="settings-header">
+            <h1 class="settings-title">Account Settings</h1>
+            <p class="settings-subtitle">Manage your notification preferences</p>
+        </div>
+
+        {% if messages %}
+            <div class="messages-section" role="alert" aria-live="polite">
+                {% for message in messages %}
+                    <div class="alert-message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="settings-card">
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="form-errors" role="alert" aria-live="assertive">
+                        {% for error in form.non_field_errors %}
+                            <div class="field-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="settings-section">
+                    <h2 class="section-heading">Email Notifications</h2>
+                    <p class="section-description">Choose which email notifications you would like to receive</p>
+                    
+                    <div class="form-groups">
+                        <div class="form-group-section">
+                            <h3 class="subsection-heading">Reminders</h3>
+                            
+                            <div class="checkbox-group">
+                                <div class="checkbox-wrapper">
+                                    {{ form.weekly_reminder_enabled }}
+                                    <label for="{{ form.weekly_reminder_enabled.id_for_label }}" class="checkbox-label">
+                                        <span class="label-text">Weekly Reminders</span>
+                                        <span class="label-help">{{ form.weekly_reminder_enabled.help_text }}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-section">
+                            <h3 class="subsection-heading">Summaries</h3>
+                            
+                            <div class="checkbox-group">
+                                <div class="checkbox-wrapper">
+                                    {{ form.weekly_summary_enabled }}
+                                    <label for="{{ form.weekly_summary_enabled.id_for_label }}" class="checkbox-label">
+                                        <span class="label-text">Weekly Summary</span>
+                                        <span class="label-help">{{ form.weekly_summary_enabled.help_text }}</span>
+                                    </label>
+                                </div>
+
+                                <div class="checkbox-wrapper">
+                                    {{ form.monthly_summary_enabled }}
+                                    <label for="{{ form.monthly_summary_enabled.id_for_label }}" class="checkbox-label">
+                                        <span class="label-text">Monthly Summary</span>
+                                        <span class="label-help">{{ form.monthly_summary_enabled.help_text }}</span>
+                                    </label>
+                                </div>
+
+                                <div class="checkbox-wrapper">
+                                    {{ form.yearly_summary_enabled }}
+                                    <label for="{{ form.yearly_summary_enabled.id_for_label }}" class="checkbox-label">
+                                        <span class="label-text">Yearly Summary</span>
+                                        <span class="label-help">{{ form.yearly_summary_enabled.help_text }}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
