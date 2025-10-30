@@ -17,6 +17,12 @@ from finance.emails.monthly_summary.content import (
     build_monthly_summary_subject,
     build_monthly_summary_content,
 )
+from finance.emails.yearly_summary.queries import get_users_needing_yearly_summary
+from finance.emails.yearly_summary.calculations import calculate_yearly_totals
+from finance.emails.yearly_summary.content import (
+    build_yearly_summary_subject,
+    build_yearly_summary_content,
+)
 from finance.utils.email_service import send_email_with_logging
 from finance.enums.email_enums import EmailType
 
@@ -86,6 +92,32 @@ def send_monthly_summaries() -> dict[str, int]:
         success = send_email_with_logging(
             user=user,
             email_type=EmailType.MONTHLY_SUMMARY,
+            subject=subject,
+            content=content,
+        )
+
+        if success:
+            sent_count += 1
+        else:
+            failed_count += 1
+
+    return {"sent": sent_count, "failed": failed_count}
+
+
+@shared_task
+def send_yearly_summaries() -> dict[str, int]:
+    users = get_users_needing_yearly_summary()
+    sent_count = 0
+    failed_count = 0
+
+    for user in users:
+        summary_data = calculate_yearly_totals(user)
+        subject = build_yearly_summary_subject()
+        content = build_yearly_summary_content(user, summary_data)
+
+        success = send_email_with_logging(
+            user=user,
+            email_type=EmailType.YEARLY_SUMMARY,
             subject=subject,
             content=content,
         )
